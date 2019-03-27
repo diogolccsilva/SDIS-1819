@@ -2,7 +2,7 @@ package peer;
 
 import disk.*;
 
-public class Peer {
+public class Peer implements PeerInterface{
 	private int peerId;
 	private Disk disk;
 
@@ -20,4 +20,24 @@ public class Peer {
 		Peer peer = new Peer(args[0], id, args[2], args[3], mcPort, args[5], mdbPort, args[7], mdrPort);
 	}
 
+
+	public void backup(String path, int ReplicationDeg) {
+
+	}
+
+	public void delete(String path) {
+
+	}
+
+	public void restore(String path) {
+
+	}
+
+	public void reclaim(float space) {
+
+	}
+
+	public String state() {
+		return "test";
+	}
 }

@@ -13,7 +13,7 @@ public class MessageHeader {
         this.version = sArray[1];
         this.senderId = Integer.parseInt(sArray[2]);
         this.fileId = Integer.parseInt(sArray[3]);
-        if (this.messageType.equals("PUTCHUNK") || this.messageType.equals("STORED") || this.messageType.equals("GETCHUNK") || this.messageType("REMOVED")){
+        if (this.messageType.equals("PUTCHUNK") || this.messageType.equals("STORED") || this.messageType.equals("GETCHUNK") || this.messageType.equals("REMOVED")){
             this.chunkNo = Integer.parseInt(sArray[4]);
         }
         if (this.messageType.equals("PUTCHUNK")){
