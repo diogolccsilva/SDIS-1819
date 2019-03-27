@@ -4,32 +4,32 @@ public class Chunk {
     public static final int CHUNK_MAX_SIZE = 64000;
 
     public int chunkNo;
-    public int fileID;
+    public String fileID;
 
     public int repDegree;
 
     public byte[] data;
 
-    public Chunk(int fileID, int chunkNo, int repDegree, byte[] data){
+    public Chunk(String fileID, int chunkNo, int repDegree, byte[] data) {
         this.chunkNo = chunkNo;
         this.fileID = fileID;
         this.data = data;
         this.repDegree = repDegree;
     }
 
-    public int getFileID(){
+    public String getFileID() {
         return fileID;
     }
 
-    public int getChunkNo(){
+    public int getChunkNo() {
         return chunkNo;
     }
 
-    public int getRepDegree(){
+    public int getRepDegree() {
         return repDegree;
     }
 
-    public byte[] getData(){
+    public byte[] getData() {
         return getData();
     }
 }
