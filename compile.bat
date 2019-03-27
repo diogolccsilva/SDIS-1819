@@ -1,0 +1,1 @@
+javac .\src\chunk\*.java .\src\disk\*.java .\src\message\*.java .\src\peer\*.java -d .\bin
