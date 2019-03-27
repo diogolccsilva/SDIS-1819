@@ -22,4 +22,8 @@ public class Utils {
     public static boolean fileExists(String filePath) {
         return new File(filePath).isFile();
     }
+
+    public static boolean isFloat(String s){
+        return s.matches("[0-9]*\\.?[0-9]+");
+    }
 }

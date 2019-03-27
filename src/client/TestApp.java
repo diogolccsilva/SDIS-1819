@@ -2,6 +2,9 @@ package client;
 
 import utils.Utils;
 
+import java.lang.Integer;
+import java.lang.Float;
+
 /**
  * TestApp
  */
@@ -37,22 +40,59 @@ public class TestApp {
         operation = args[1].toUpperCase();
         switch (operation) {
             case "BACKUP":
-                if (!Utils.fileExists(filePath)){
-                    System.out.println(operation + " error: File doesn't exist");
+                if (args.length != 4){
+                    System.out.println(operation + " error: Invalid number of arguments!");
                     return false;
                 }
+                if (!Utils.fileExists(args[2])){
+                    System.out.println(operation + " error: File doesn't exist!");
+                    return false;
+                }
+                filePath = args[2];
+                if (!Utils.isInteger(args[3])){
+                    System.out.println(operation + " error: Replication Degree invalid!");
+                    return false;
+                }
+                replicationDeg = Integer.parseInt(args[3]);
                 break;
             case "RESTORE":
-
+                if (args.length != 3){
+                    System.out.println(operation + " error: Invalid number of arguments!");
+                    return false;
+                }
+                if (!Utils.fileExists(args[2])){
+                    System.out.println(operation + " error: File doesn't exist!");
+                    return false;
+                }
+                filePath = args[2];
                 break;
             case "DELETE":
-
+                if (args.length != 3){
+                    System.out.println(operation + " error: Invalid number of arguments!");
+                    return false;
+                }
+                if (!Utils.fileExists(args[2])){
+                    System.out.println(operation + " error: File doesn't exist!");
+                    return false;
+                }
+                filePath = args[2];
                 break;
             case "RECLAIM":
-
+                if (args.length != 3){
+                    System.out.println(operation + " error: Invalid number of arguments!");
+                    return false;
+                }
+                if (!Utils.isFloat(args[2])){
+                    System.out.println(operation + " error: Maximum amount of disk space invalid!");
+                    return false;
+                }
+                diskSpace = Float.parseFloat(args[2]);
                 break;
             case "STATE":
-
+                if (args.length != 2){
+                    System.out.println(operation + " error: Invalid number of arguments!");
+                    return false;
+                }
                 break;
             default:
                 System.out.println("Error: Invalid operation!");
