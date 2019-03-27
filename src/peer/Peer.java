@@ -1,28 +1,23 @@
 package peer;
 
-import java.io.File;
+import disk.*;
 
 public class Peer {
 	private int peerId;
+	private Disk disk;
 
-	public Peer(int peerId) {
-		this.peerId = peerId;
-		createDir();
+	public Peer(String pVersion, int sid, String accessPoint, String mcAddress, int mcPort, String mdbAddress,
+			int mdbPort, String mdrAddress, int mdrPort) {
+		this.peerId = sid;
+		disk = new Disk("peer" + peerId);
 	}
 
 	public static void main(String[] args) {
-		int id = Integer.parseInt(args[0]);
-		Peer peer = new Peer(id);
+		int id = Integer.parseInt(args[1]);
+		int mcPort = Integer.parseInt(args[4]);
+		int mdbPort = Integer.parseInt(args[6]);
+		int mdrPort = Integer.parseInt(args[8]);
+		Peer peer = new Peer(args[0], id, args[2], args[3], mcPort, args[5], mdbPort, args[7], mdrPort);
 	}
 
-	public boolean createDir() {
-		File dir = new File("./peers/peer" + peerId);
-		boolean success = dir.mkdirs();
-		/*if (!success) {
-			System.out.println("Failed to create peer's directory");
-		} else {
-			System.out.println("Created peer's directory");
-		}*/
-		return success;
-	}
 }
