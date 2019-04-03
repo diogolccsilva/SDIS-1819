@@ -16,9 +16,17 @@ public class Disk {
 	private long size; /* Disk size in bytes */
 	private String diskLocation;
 	private File directory;
+	private File backupDirectory, restoredDirectory;
 
 	public static void main(String[] args) {
 		Disk disk = new Disk("peer1");
+		disk.createFileFolder("1");
+		String data = "DSFAg";
+		disk.storeChunk(new Chunk("2", 1, 1, data.getBytes()));
+		disk.storeChunk(new Chunk("2", 2, 1, data.getBytes()));
+		System.out.println(disk.getFileChunks("2").length);
+		Chunk chunk1 = disk.getChunk("2", 1);
+		Chunk chunk3 = disk.getChunk("2", 3);
 	}
 
 	public Disk(String diskName) {
@@ -28,16 +36,28 @@ public class Disk {
 	public Disk(String diskName, float size) {
 		this.diskLocation = DEFAULT_DISK_LOCATION + diskName;
 		this.size = (long) (size * 1000);
-		if (!this.createDiskDirectory()) {
-			// throw (DiskFailedToInitialize);
-			System.out.println("Failed to create directory");
-		}
+		createDiskDirectory();
 	}
 
 	public boolean createDiskDirectory() {
-		File dir = new File(this.diskLocation);
-		if (dir.mkdirs()) {
-			this.directory = dir;
+		directory = new File(this.diskLocation);
+		directory.mkdirs();
+		createBackupDirectory();
+		createRestoredDirectory();
+		return true;
+	}
+
+	public boolean createBackupDirectory() {
+		backupDirectory = new File(this.diskLocation + "/backup");
+		if (backupDirectory.mkdirs()) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean createRestoredDirectory() {
+		restoredDirectory = new File(this.diskLocation + "/restored");
+		if (restoredDirectory.mkdirs()) {
 			return true;
 		}
 		return false;
@@ -70,15 +90,23 @@ public class Disk {
 		return length;
 	}
 
-	public int storeChunk(Chunk chunk) {
-		String fileName = chunk.getFileID() + "-" + chunk.getChunkNo() + "-" + chunk.getRepDegree();
+	public File createFileFolder(String fileId) {
+		File fileFolder = new File(backupDirectory.getPath() + "/" + fileId);
+		fileFolder.mkdirs();
+		return fileFolder;
+	}
 
-		File chunkFile = new File(diskLocation + "/" + fileName);
+	public int storeChunk(Chunk chunk) {
+		String fileName = chunk.getChunkNo() + "-" + chunk.getRepDegree();
+
+		File folder = createFileFolder(chunk.getFileID());
+
+		File chunkFile = new File(folder.getPath() + "/" + fileName);
 
 		try (FileOutputStream fos = new FileOutputStream(chunkFile)) {
 			fos.write(chunk.getData());
 		} catch (Exception e) {
-
+			e.printStackTrace();
 		}
 
 		return 0;
@@ -90,47 +118,36 @@ public class Disk {
 	}
 
 	public Chunk[] getFileChunks(String fileId) {
-		File chunkFiles[] = directory.listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				boolean accepts = false;
-				String parsedName[] = name.split("-");
-				if (parsedName[0] == fileId) {
-					accepts = true;
-				}
-				return accepts;
-			}
-		});
+		File fileChunkDirectory = new File(backupDirectory.getPath() + "/" + fileId);
+		File chunkFiles[] = fileChunkDirectory.listFiles();
 
 		Chunk[] chunks = new Chunk[chunkFiles.length];
 
 		for (int i = 0; i < chunkFiles.length; i++) {
-			chunks[i] = parseFileToChunk(chunkFiles[i]);
+			chunks[i] = parseFileToChunk(fileId, chunkFiles[i]);
 		}
 
 		return chunks;
 	}
 
 	public Chunk getChunk(String fileId, int chunkId) {
-		File[] chunkFiles = directory.listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.startsWith(fileId + "-" + chunkId);
+		Chunk[] chunks = getFileChunks(fileId);
+
+		for (Chunk chunk : chunks) {
+			if (chunk.getChunkNo() == chunkId) {
+				System.out.println("Found chunk " + chunkId);
+				return chunk;
 			}
-		});
-
-		File chunkFile = chunkFiles[0];
-
-		return parseFileToChunk(chunkFile);
+		}
+		return null;
 	}
 
-	public Chunk parseFileToChunk(File chunkFile) {
+	public Chunk parseFileToChunk(String fileId, File chunkFile) {
 		String fileName = chunkFile.getName();
 		String parsedName[] = fileName.split("-");
 
-		String fileId = parsedName[0];
-		int chunkId = Integer.parseInt(parsedName[1]);
-		int repDegree = Integer.parseInt(parsedName[2]);
+		int chunkId = Integer.parseInt(parsedName[0]);
+		int repDegree = Integer.parseInt(parsedName[1]);
 
 		byte[] data = new byte[(int) chunkFile.length()];
 
