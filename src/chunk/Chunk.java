@@ -30,6 +30,6 @@ public class Chunk {
     }
 
     public byte[] getData() {
-        return getData();
+        return data;
     }
 }
