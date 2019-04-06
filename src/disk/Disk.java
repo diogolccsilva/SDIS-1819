@@ -27,6 +27,7 @@ public class Disk {
 		System.out.println(disk.getFileChunks("2").length);
 		Chunk chunk1 = disk.getChunk("2", 1);
 		Chunk chunk3 = disk.getChunk("2", 3);
+		disk.deleteChunk("2", 2);
 	}
 
 	public Disk(String diskName) {
@@ -112,14 +113,13 @@ public class Disk {
 		return 0;
 	}
 
-	public int deleteChunk() {
-
-		return 0;
+	public File[] getFileChunkFiles(String fileId) {
+		File fileChunkDirectory = new File(backupDirectory.getPath() + "/" + fileId);
+		return fileChunkDirectory.listFiles();
 	}
 
 	public Chunk[] getFileChunks(String fileId) {
-		File fileChunkDirectory = new File(backupDirectory.getPath() + "/" + fileId);
-		File chunkFiles[] = fileChunkDirectory.listFiles();
+		File chunkFiles[] = getFileChunkFiles(fileId);
 
 		Chunk[] chunks = new Chunk[chunkFiles.length];
 
@@ -130,12 +130,21 @@ public class Disk {
 		return chunks;
 	}
 
+	public File getChunkFile(String fileId, int chunkId) {
+		File chunkFiles[] = getFileChunkFiles(fileId);
+		for (File chunkFile : chunkFiles) {
+			if (chunkFile.getName().startsWith(chunkId + "-")) {
+				return chunkFile;
+			}
+		}
+		return null;
+	}
+
 	public Chunk getChunk(String fileId, int chunkId) {
 		Chunk[] chunks = getFileChunks(fileId);
 
 		for (Chunk chunk : chunks) {
 			if (chunk.getChunkNo() == chunkId) {
-				System.out.println("Found chunk " + chunkId);
 				return chunk;
 			}
 		}
@@ -160,6 +169,15 @@ public class Disk {
 		Chunk chunk = new Chunk(fileId, chunkId, repDegree, data);
 
 		return chunk;
+	}
+
+	public boolean deleteChunk(String fileId, int chunkId) {
+		File chunkFile = getChunkFile(fileId, chunkId);
+		if (!chunkFile.delete()) {
+			System.out.println("Failed to delete " + chunkFile);
+			return false;
+		}
+		return true;
 	}
 
 }
