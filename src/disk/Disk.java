@@ -28,9 +28,8 @@ public class Disk {
 		Chunk chunk1 = disk.getChunk("2", 1);
 		Chunk chunk3 = disk.getChunk("2", 3);
 		disk.deleteChunk("2", 2);
-		System.out.println(args[0]);
 		Chunk[] chunks = Chunk.splitFile(args[0], 1);
-		disk.storeChunk(chunks[0]);
+		Chunk.restoreFile(chunks, disk.getRestoredDirectoryPath() + "/file1.pdf");
 	}
 
 	public Disk(String diskName) {
@@ -41,6 +40,38 @@ public class Disk {
 		this.diskLocation = DEFAULT_DISK_LOCATION + diskName;
 		this.size = (long) (size * 1000);
 		createDiskDirectory();
+	}
+
+	/**
+	 * @return the backupDirectory
+	 */
+	public File getBackupDirectory() {
+		return backupDirectory;
+	}
+
+	/**
+	 * @return the defaultDiskLocation
+	 */
+	public static String getDefaultDiskLocation() {
+		return DEFAULT_DISK_LOCATION;
+	}
+
+	/**
+	 * @return the directory
+	 */
+	public File getDirectory() {
+		return directory;
+	}
+
+	/**
+	 * @return the restoredDirectory
+	 */
+	public File getRestoredDirectory() {
+		return restoredDirectory;
+	}
+
+	public String getRestoredDirectoryPath() {
+		return restoredDirectory.getAbsolutePath();
 	}
 
 	public boolean createDiskDirectory() {

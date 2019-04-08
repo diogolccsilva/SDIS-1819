@@ -2,10 +2,8 @@ package chunk;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.RandomAccessFile;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -102,14 +100,12 @@ public class Chunk {
     }
 
     public static void restoreFile(Chunk[] chunks, String filePath) {
-        Path file = Paths.get(filePath);
-        for (int i= 0; i<chunks.length; i++) {
-            try {
-                Files.write(file, chunks[i].getData());
-            } 
-            catch(Exception e) {
-                e.printStackTrace();
+        try (FileOutputStream fos = new FileOutputStream(filePath)) {
+            for (int i = 0; i < chunks.length; i++) {
+                fos.write(chunks[i].getData());
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
