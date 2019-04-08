@@ -28,6 +28,9 @@ public class Disk {
 		Chunk chunk1 = disk.getChunk("2", 1);
 		Chunk chunk3 = disk.getChunk("2", 3);
 		disk.deleteChunk("2", 2);
+		System.out.println(args[0]);
+		Chunk[] chunks = Chunk.splitFile(args[0], 1);
+		disk.storeChunk(chunks[0]);
 	}
 
 	public Disk(String diskName) {

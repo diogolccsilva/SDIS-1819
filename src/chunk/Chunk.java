@@ -3,16 +3,21 @@ package chunk;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class Chunk {
     public static final int CHUNK_MAX_SIZE = 64000;
 
-    public int chunkNo;
-    public String fileID;
+    private int chunkNo;
+    private String fileID;
 
-    public int repDegree;
+    private int repDegree;
 
-    public byte[] data;
+    private byte[] data;
 
     public Chunk(String fileID, int chunkNo, int repDegree, byte[] data) {
         this.chunkNo = chunkNo;
@@ -22,46 +27,90 @@ public class Chunk {
     }
 
     /**
-     * @return the chunk's file ID
+     * @return The chunk's file ID
      */
     public String getFileID() {
         return fileID;
     }
 
     /**
-     * @return the chunk number
+     * @return The chunk number
      */
     public int getChunkNo() {
         return chunkNo;
     }
 
     /**
-     * @return the chunk replication degree
+     * @return The chunk replication degree
      */
     public int getRepDegree() {
         return repDegree;
     }
 
     /**
-     * @return the chunk data byte array
+     * @return The chunk data byte array
      */
     public byte[] getData() {
         return data;
     }
 
+    public static Chunk[] splitFile(String path, int repDegree) {
+        File file = new File(path);
+        return splitFile(file, repDegree);
+    }
+
     public static Chunk[] splitFile(File file, int repDegree) {
-        int nChunks = (int) (file.getTotalSpace() / CHUNK_MAX_SIZE);
+        if (!file.isFile()) {
+            return null;
+        }
+        long nFileBytes = file.length();
+        int nChunks = (int) ((nFileBytes - 1) / CHUNK_MAX_SIZE + 1);
+        System.out.println("nChunks: " + nChunks);
         Chunk[] chunks = new Chunk[nChunks];
         try (RandomAccessFile data = new RandomAccessFile(file, "r")) {
-            byte[] eight = new byte[8];
+            int nReadBytes = 0;
             for (int i = 0; i < nChunks; i++) {
-                data.readFully(CHUNK_MAX_SIZE);
-                // do something with the 8 bytes
+                int nBytesToRead;
+                int nBytesMissing = (int) (nFileBytes - nReadBytes);
+                if (nBytesMissing < CHUNK_MAX_SIZE) {
+                    nBytesToRead = nBytesMissing;
+                } else {
+                    nBytesToRead = CHUNK_MAX_SIZE;
+                }
+                byte[] newData = new byte[nBytesToRead];
+                data.readFully(newData);
+                Chunk newChunk = new Chunk(generateFileId(file), i + 1, repDegree, newData);
+                chunks[i] = newChunk;
+                nReadBytes += CHUNK_MAX_SIZE;
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return chunks;
+    }
+
+    private static String generateFileId(File file) {
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
+        byte[] encodedhash = digest.digest((file.getName() + file.getTotalSpace()).getBytes());
+        return encodedhash.toString();
+    }
+
+    public static void restoreFile(Chunk[] chunks, String filePath) {
+        Path file = Paths.get(filePath);
+        for (int i= 0; i<chunks.length; i++) {
+            try {
+                Files.write(file, chunks[i].getData());
+            } 
+            catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }
