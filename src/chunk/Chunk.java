@@ -63,7 +63,6 @@ public class Chunk {
         }
         long nFileBytes = file.length();
         int nChunks = (int) ((nFileBytes - 1) / CHUNK_MAX_SIZE + 1);
-        System.out.println("nChunks: " + nChunks);
         Chunk[] chunks = new Chunk[nChunks];
         try (RandomAccessFile data = new RandomAccessFile(file, "r")) {
             int nReadBytes = 0;
@@ -99,7 +98,20 @@ public class Chunk {
         return encodedhash.toString();
     }
 
+    public static void sortChunkArray(Chunk[] chunks) {
+        for (int i = 0; i < chunks.length; i++) {
+            Chunk currChunk = chunks[i];
+            int nCurrChunk = currChunk.getChunkNo();
+            if (nCurrChunk != i + 1) {
+                Chunk tempChunk = chunks[i];
+                chunks[i] = chunks[nCurrChunk - 1];
+                chunks[nCurrChunk - 1] = tempChunk;
+            }
+        }
+    }
+
     public static void restoreFile(Chunk[] chunks, String filePath) {
+        sortChunkArray(chunks);
         try (FileOutputStream fos = new FileOutputStream(filePath)) {
             for (int i = 0; i < chunks.length; i++) {
                 fos.write(chunks[i].getData());
