@@ -6,10 +6,17 @@ public class Peer implements PeerInterface{
 	private int peerId;
 	private Disk disk;
 
+	private String pVersion;
+	private String acessPoint;
+
+	
+
 	public Peer(String pVersion, int sid, String accessPoint, String mcAddress, int mcPort, String mdbAddress,
 			int mdbPort, String mdrAddress, int mdrPort) {
 		this.peerId = sid;
 		disk = new Disk("peer" + peerId);
+		this.pVersion = pVersion;
+
 	}
 
 	public static void main(String[] args) {
