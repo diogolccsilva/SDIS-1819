@@ -1,4 +1,4 @@
-package peer;
+package peer.channels;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

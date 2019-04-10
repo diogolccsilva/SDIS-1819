@@ -49,11 +49,12 @@ public class Message {
         
         return myString.matches(".* [0-9].[0-9] [0-9]+ .{32} .{6} [0-9]\r\n\r\n(.*)?");
     }*/
-
+    /*
     public static Message parsePutChunkMessage(Chunk chunk) {
         Message header = new MessageHeader("PUTCHUNK","");
         Message message = new Message();
 
 		return message;
     }
+    */
 }

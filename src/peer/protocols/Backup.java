@@ -24,6 +24,6 @@ public class Backup {
 	}
 
 	public void backupChunk(Chunk chunk) {
-		Message message = new Message(, );
+		//Message message = new Message(, );
 	}
 }
