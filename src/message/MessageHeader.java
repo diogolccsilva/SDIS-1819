@@ -4,15 +4,15 @@ public class MessageHeader {
 
     public static final int MESSAGE_HEADER_MAX_SIZE = 1000;
 
-    private String messageType, version;
-    private int senderId, fileId, chunkNo, replicaDeg;
+    private String messageType, version, fileId;
+    private int senderId, chunkNo, replicaDeg;
 
     public MessageHeader(String rawHeader) {
         String[] sArray = rawHeader.split(" ");
         this.messageType = sArray[0];
         this.version = sArray[1];
         this.senderId = Integer.parseInt(sArray[2]);
-        this.fileId = Integer.parseInt(sArray[3]);
+        this.fileId = sArray[3];
         if (this.messageType.equals("PUTCHUNK") || this.messageType.equals("STORED") || this.messageType.equals("GETCHUNK") || this.messageType.equals("REMOVED")){
             this.chunkNo = Integer.parseInt(sArray[4]);
         }
@@ -21,7 +21,7 @@ public class MessageHeader {
         }
     }
 
-    public MessageHeader(String messageType, String version, int senderId, int fileId, int chunkNo, int replicaDeg)
+    public MessageHeader(String messageType, String version, int senderId, String fileId, int chunkNo, int replicaDeg)
     {
         this.messageType = messageType;
         this.version = version;
@@ -46,7 +46,7 @@ public class MessageHeader {
         return this.senderId;
     }
 
-    public int getFileId()
+    public String getFileId()
     {
         return this.fileId;
     }
@@ -64,6 +64,6 @@ public class MessageHeader {
     @Override
     public String toString()
     {
-        return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + Integer.toString(this.fileId) + " " + Integer.toString(this.chunkNo) + " " + Integer.toString(this.replicaDeg)+"\r\n\r\n";
+        return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + this.fileId + " " + Integer.toString(this.chunkNo) + " " + Integer.toString(this.replicaDeg)+"\r\n\r\n";
     }
 }
