@@ -4,7 +4,6 @@ import disk.*;
 import peer.channels.*;
 
 import java.io.IOException;
-import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -18,11 +17,7 @@ public class Peer extends UnicastRemoteObject implements PeerInterface{
 	private Registry rmiReg;
 
 	private String pVersion;
-	private String acessPoint;
-
-	private SocketPair mcChannel;
-	private SocketPair mdbChannel;
-	private SocketPair mdrChannel;
+	private String accessPoint;
 
 	private Thread mcListener;
 	private Thread mdbListener;
@@ -33,8 +28,10 @@ public class Peer extends UnicastRemoteObject implements PeerInterface{
 			int mdbPort, String mdrAddress, int mdrPort) throws RemoteException {
 		super();
 		this.peerId = sid;
+
 		this.disk = new Disk("peer" + peerId);
 		this.pVersion = pVersion;
+		this.accessPoint = accessPoint;
 		this.rmiReg = null;
 
 		this.startRMI();
@@ -45,8 +42,7 @@ public class Peer extends UnicastRemoteObject implements PeerInterface{
 			e.printStackTrace();
 		}
 		
-
-
+		System.out.println("Peer " + this.peerId + "running...");
 	}
 
 	public static void main(String[] args) {
@@ -64,23 +60,23 @@ public class Peer extends UnicastRemoteObject implements PeerInterface{
 	public void startRMI(){
 		try {
 			this.rmiReg = LocateRegistry.getRegistry();
-			rmiReg.bind(Integer.toString(this.peerId), this);
+			rmiReg.rebind(this.accessPoint, this);
 		} catch(RemoteException e) {
-			e.printStackTrace();
-		} catch(AlreadyBoundException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public void startChannels(String mcA, int mcP, String mdbA, int mdbP, String mdrA, int mdrP) throws IOException{
-		this.mcChannel = new SocketPair(mcA, mcP);
-		this.mdbChannel = new SocketPair(mdbA, mdbP);
-		this.mdrChannel = new SocketPair(mdrA, mdrP);
+		this.mcListener = new Thread(new McListener(mcA, mcP));
+		this.mdbListener = new Thread(new MdbListener(mdbA, mdbP));
+		this.mdrListener = new Thread(new MdrListener(mdrA, mdrP));
 
-		this.mcListener = new Thread(new McListener(this));
-		this.mdbListener = new Thread(new MdbListener(this));
-		this.mdrListener = new Thread(new MdrListener(this));
+		this.mcListener.start();
+		this.mdbListener.start();
+		this.mdrListener.start();	
 	}
+
+
 
 
 	public void backup(String path, int ReplicationDeg) {
