@@ -98,4 +98,11 @@ public class Peer extends UnicastRemoteObject implements PeerInterface{
 	public String state() {
 		return "test";
 	}
+
+	/**
+	 * @return the peerId
+	 */
+	public int getPeerId() {
+		return peerId;
+	}
 }

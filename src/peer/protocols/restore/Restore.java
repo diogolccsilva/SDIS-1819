@@ -1,4 +1,4 @@
-package peer.protocols;
+package peer.protocols.restore;
 
 /**
  * Restore

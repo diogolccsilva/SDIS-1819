@@ -5,9 +5,8 @@ import chunk.Chunk;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-
 public class Message {
-    
+
     public static final int MESSAGE_PACKET_MAX_SIZE = Chunk.CHUNK_MAX_SIZE + MessageHeader.MESSAGE_HEADER_MAX_SIZE;
 
     private MessageHeader header;
@@ -16,7 +15,7 @@ public class Message {
     public Message(byte[] data) {
         String rawMessage = new String(data);
         int index = rawMessage.indexOf("\r\n\r\n");
-        String rawHeader = rawMessage.substring(0,index).trim();
+        String rawHeader = rawMessage.substring(0, index).trim();
         header = new MessageHeader(rawHeader);
         body = rawMessage.substring(index).getBytes();
     }
@@ -25,9 +24,8 @@ public class Message {
         this.header = header;
         this.body = body;
     }
-    
-    public byte[] toBytes() throws IOException
-    {
+
+    public byte[] toBytes() throws IOException {
         byte[] result;
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bos.write(header.toString().getBytes());
@@ -43,18 +41,21 @@ public class Message {
     public byte[] getBody() {
         return body;
     }
-    /*public static boolean isValid(String message)
-    {
-        String myString = message.substring(0,message.indexOf("\r\n\r\n"));
-        
-        return myString.matches(".* [0-9].[0-9] [0-9]+ .{32} .{6} [0-9]\r\n\r\n(.*)?");
-    }*/
-    /*
-    public static Message parsePutChunkMessage(Chunk chunk) {
-        Message header = new MessageHeader("PUTCHUNK","");
-        Message message = new Message();
 
-		return message;
+    /*
+     * public static boolean isValid(String message) { String myString =
+     * message.substring(0,message.indexOf("\r\n\r\n"));
+     * 
+     * return
+     * myString.matches(".* [0-9].[0-9] [0-9]+ .{32} .{6} [0-9]\r\n\r\n(.*)?"); }
+     */
+
+    public static Message parsePutChunkMessage(Chunk chunk, int senderId) {
+        MessageHeader header = new MessageHeader("PUTCHUNK", "", senderId, chunk.getFileID(), chunk.getChunkNo(),
+                chunk.getRepDegree());
+        Message message = new Message(header, chunk.getData());
+
+        return message;
     }
-    */
+
 }
