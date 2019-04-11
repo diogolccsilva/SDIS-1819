@@ -1,20 +1,36 @@
 package peer.channels;
 
-import peer.Peer;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
+import java.net.UnknownHostException;
 
 public class McListener implements Runnable{
 
-    private Peer peer;
+    private MulticastSocket socket;
+    private InetAddress address;
+    private int port;
 
-    public McListener(Peer peer){
-        this.peer = peer;
+
+    public McListener(String address, int port){
+        try{
+            this.address = InetAddress.getByName(address);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        this.port = port;
     }
 
     @Override
     public void run() {
-        while(true) {
-
-        }
+        try {
+            this.socket = new MulticastSocket(port);
+            socket.setTimeToLive(1);
+            socket.joinGroup(address);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        } 
     }
 
 }
