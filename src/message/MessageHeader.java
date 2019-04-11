@@ -21,6 +21,18 @@ public class MessageHeader {
         }
     }
 
+    public MessageHeader(String messageType, String version, int senderId, String fileId, int chunkNo)
+            throws InvalidHeaderParameters {
+        if (this.messageType.equals("PUTCHUNK")){
+            throw new InvalidHeaderParameters();
+        }
+        this.messageType = messageType;
+        this.version = version;
+        this.senderId = senderId;
+        this.fileId = fileId;
+        this.chunkNo = chunkNo;
+    }
+
     public MessageHeader(String messageType, String version, int senderId, String fileId, int chunkNo, int replicaDeg)
     {
         this.messageType = messageType;
