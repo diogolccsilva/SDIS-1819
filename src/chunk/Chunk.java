@@ -57,12 +57,17 @@ public class Chunk {
         return splitFile(file, repDegree);
     }
 
+    public static int getNumberOfFileChunks(File file) {
+        long nFileBytes = file.length();
+        return (int) ((nFileBytes - 1) / CHUNK_MAX_SIZE + 1);
+    }
+
     public static Chunk[] splitFile(File file, int repDegree) {
         if (!file.isFile()) {
             return null;
         }
         long nFileBytes = file.length();
-        int nChunks = (int) ((nFileBytes - 1) / CHUNK_MAX_SIZE + 1);
+        int nChunks = getNumberOfFileChunks(file);
         Chunk[] chunks = new Chunk[nChunks];
         try (RandomAccessFile data = new RandomAccessFile(file, "r")) {
             int nReadBytes = 0;

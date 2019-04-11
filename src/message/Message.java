@@ -58,4 +58,15 @@ public class Message {
         return message;
     }
 
+    public static Message parseStoredMessage(Chunk chunk, int senderId) {
+        try {
+            MessageHeader header = new MessageHeader("STORED", "", senderId, chunk.getFileID(), chunk.getChunkNo());
+            Message message = new Message(header,null);
+            return message;
+        } catch (InvalidHeaderParameters e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

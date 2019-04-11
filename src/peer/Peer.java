@@ -105,4 +105,12 @@ public class Peer extends UnicastRemoteObject implements PeerInterface{
 	public int getPeerId() {
 		return peerId;
 	}
+
+	/**
+	 * @return the disk
+	 */
+	public Disk getDisk() {
+		return disk;
+	}
+	
 }
