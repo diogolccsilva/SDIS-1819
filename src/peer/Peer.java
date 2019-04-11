@@ -67,9 +67,9 @@ public class Peer extends UnicastRemoteObject implements PeerInterface{
 	}
 
 	public void startChannels(String mcA, int mcP, String mdbA, int mdbP, String mdrA, int mdrP) throws IOException{
-		this.mcListener = new Thread(new McListener(mcA, mcP));
-		this.mdbListener = new Thread(new MdbListener(mdbA, mdbP));
-		this.mdrListener = new Thread(new MdrListener(mdrA, mdrP));
+		this.mcListener = new Thread(new Listener(this, mcA, mcP));
+		this.mdbListener = new Thread(new Listener(this, mdbA, mdbP));
+		this.mdrListener = new Thread(new Listener(this, mdrA, mdrP));
 
 		this.mcListener.start();
 		this.mdbListener.start();
