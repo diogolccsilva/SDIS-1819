@@ -131,20 +131,25 @@ public class Disk {
 		return fileFolder;
 	}
 
-	public int storeChunk(Chunk chunk) {
+	public boolean storeChunk(Chunk chunk) {
 		String fileName = chunk.getChunkNo() + "-" + chunk.getRepDegree();
 
 		File folder = createFileFolder(chunk.getFileID());
 
 		File chunkFile = new File(folder.getPath() + "/" + fileName);
+		
+		if (chunkFile.exists()) {
+			return false;
+		}
 
 		try (FileOutputStream fos = new FileOutputStream(chunkFile)) {
 			fos.write(chunk.getData());
 		} catch (Exception e) {
 			e.printStackTrace();
+			return false;
 		}
 
-		return 0;
+		return true;
 	}
 
 	public File[] getFileChunkFiles(String fileId) {
