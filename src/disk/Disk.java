@@ -1,17 +1,21 @@
 package disk;
 
 import chunk.*;
+import utils.Utils;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
-import java.io.FilenameFilter;
+import java.io.IOException;
 
 /**
  * Disk
  */
 public class Disk {
 
-	public static final String DEFAULT_DISK_LOCATION = "./files/peers/";
+	public static String fileSeparator = System.getProperty("file.separator");
+	public static final String DEFAULT_DISK_LOCATION = "." + fileSeparator + "files" + fileSeparator + "peers"
+			+ fileSeparator;
 
 	private long size; /* Disk size in bytes */
 	private String diskLocation;
@@ -29,7 +33,7 @@ public class Disk {
 		Chunk chunk3 = disk.getChunk("2", 3);
 		disk.deleteChunk("2", 2);
 		Chunk[] chunks = Chunk.splitFile(args[0], 1);
-		Chunk.restoreFile(chunks, disk.getRestoredDirectoryPath() + "/file1.pdf");
+		Chunk.restoreFile(chunks, disk.getRestoredDirectoryPath() + fileSeparator + "file1.pdf");
 	}
 
 	public Disk(String diskName) {
@@ -83,7 +87,7 @@ public class Disk {
 	}
 
 	public boolean createBackupDirectory() {
-		backupDirectory = new File(this.diskLocation + "/backup");
+		backupDirectory = new File(this.diskLocation + fileSeparator + "backup");
 		if (backupDirectory.mkdirs()) {
 			return true;
 		}
@@ -91,7 +95,7 @@ public class Disk {
 	}
 
 	public boolean createRestoredDirectory() {
-		restoredDirectory = new File(this.diskLocation + "/restored");
+		restoredDirectory = new File(this.diskLocation + fileSeparator + "restored");
 		if (restoredDirectory.mkdirs()) {
 			return true;
 		}
@@ -126,7 +130,7 @@ public class Disk {
 	}
 
 	public File createFileFolder(String fileId) {
-		File fileFolder = new File(backupDirectory.getPath() + "/" + fileId);
+		File fileFolder = new File(backupDirectory.getPath() + fileSeparator + fileId);
 		fileFolder.mkdirs();
 		return fileFolder;
 	}
@@ -136,8 +140,8 @@ public class Disk {
 
 		File folder = createFileFolder(chunk.getFileID());
 
-		File chunkFile = new File(folder.getPath() + "/" + fileName);
-		
+		File chunkFile = new File(folder.getPath() + fileSeparator + fileName);
+
 		if (chunkFile.exists()) {
 			return false;
 		}
@@ -153,7 +157,7 @@ public class Disk {
 	}
 
 	public File[] getFileChunkFiles(String fileId) {
-		File fileChunkDirectory = new File(backupDirectory.getPath() + "/" + fileId);
+		File fileChunkDirectory = getFileChunkDirectory(fileId);
 		return fileChunkDirectory.listFiles();
 	}
 
@@ -190,6 +194,10 @@ public class Disk {
 		return null;
 	}
 
+	public File getFileChunkDirectory(String fileId) {
+		return new File(backupDirectory.getPath() + fileSeparator + fileId);
+	}
+
 	public Chunk parseFileToChunk(String fileId, File chunkFile) {
 		String fileName = chunkFile.getName();
 		String parsedName[] = fileName.split("-");
@@ -208,6 +216,17 @@ public class Disk {
 		Chunk chunk = new Chunk(fileId, chunkId, repDegree, data);
 
 		return chunk;
+	}
+
+	public boolean deleteFileDirectory(String fileId) {
+		File fileDir = getFileChunkDirectory(fileId);
+		try {
+			Utils.deleteDirectoryRecursively(fileDir);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	public boolean deleteChunk(String fileId, int chunkId) {
