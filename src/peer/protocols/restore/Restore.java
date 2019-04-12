@@ -1,5 +1,6 @@
 package peer.protocols.restore;
 
+import message.Message;
 import peer.Peer;
 
 /**
@@ -15,12 +16,15 @@ public class Restore implements Runnable {
 		this.fileId = fileId;
 	}
 
-	public void sendGetChunk() {
-
+	public void sendGetChunk(int chunkNo) {
+		Message message = Message.parseGetChunkMessage(fileId, chunkNo, peer.getPeerId());
 	}
 
 	public void restore() {
-		sendGetChunk();
+		
+		for (int i = 0;i < 10;i++) {
+			sendGetChunk(i);
+		}
 	}
 
 	@Override
