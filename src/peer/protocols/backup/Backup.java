@@ -3,7 +3,6 @@ package peer.protocols.backup;
 import java.io.File;
 
 import chunk.Chunk;
-import message.Message;
 import peer.Peer;
 
 /**
