@@ -9,7 +9,7 @@ import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.net.DatagramPacket;
 
-public class Listener implements Runnable{
+public class Listener implements Runnable {
 
     private MulticastSocket socket;
     private InetAddress address;
@@ -17,8 +17,8 @@ public class Listener implements Runnable{
 
     private Peer peer;
 
-    public Listener(Peer peer, String address, int port){
-        try{
+    public Listener(Peer peer, String address, int port) {
+        try {
             this.address = InetAddress.getByName(address);
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -38,7 +38,7 @@ public class Listener implements Runnable{
             System.exit(1);
         }
 
-        while(true) {
+        while (true) {
             byte[] buf = new byte[64000];
 
             DatagramPacket packet = new DatagramPacket(buf, buf.length);
@@ -50,9 +50,41 @@ public class Listener implements Runnable{
             System.out.println("MC Listener: Packet Received!");
             Thread handler = new Thread(new Handler(peer, packet));
             handler.start();
+            try {
+                handler.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         
     }
 
+    /**
+     * @return the socket
+     */
+    public MulticastSocket getSocket() {
+        return socket;
+    }
+
+    /**
+     * @return the address
+     */
+    public InetAddress getAddress() {
+        return address;
+    }
+
+    /**
+     * @return the port
+     */
+    public int getPort() {
+        return port;
+    }
+
+    /**
+     * @return the peer
+     */
+    public Peer getPeer() {
+        return peer;
+    }
 }
 

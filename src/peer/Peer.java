@@ -1,19 +1,22 @@
 package peer;
 
-import disk.*;
-import peer.channels.*;
-
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.MulticastSocket;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.lang.Thread;
 
-public class Peer extends UnicastRemoteObject implements PeerInterface{
-	
+import disk.Disk;
+import message.Message;
+import peer.channels.Listener;
+import peer.protocols.backup.Backup;
+
+public class Peer extends UnicastRemoteObject implements PeerInterface {
+
 	private static final long serialVersionUID = 4988282307993613946L;
-	
+
 	private int peerId;
 	private Disk disk;
 
@@ -22,10 +25,11 @@ public class Peer extends UnicastRemoteObject implements PeerInterface{
 	private String pVersion;
 	private String accessPoint;
 
-	private Thread mcListener;
-	private Thread mdbListener;
-	private Thread mdrListener;
+	private MulticastSocket socket;
 
+	private Listener mcChannel;
+	private Listener mdbChannel;
+	private Listener mdrChannel;
 
 	public Peer(String pVersion, int sid, String accessPoint, String mcAddress, int mcPort, String mdbAddress,
 			int mdbPort, String mdrAddress, int mdrPort) throws RemoteException {
@@ -36,15 +40,20 @@ public class Peer extends UnicastRemoteObject implements PeerInterface{
 		this.pVersion = pVersion;
 		this.accessPoint = accessPoint;
 		this.rmiReg = null;
-
-		this.startRMI();
-		
-		try{
-			this.startChannels(mcAddress, mcPort, mdbAddress, mdbPort, mdrAddress, mdrPort);	
+		try {
+			this.socket = new MulticastSocket();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
+		this.startRMI();
+
+		try {
+			this.startChannels(mcAddress, mcPort, mdbAddress, mdbPort, mdrAddress, mdrPort);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		System.out.println("Peer " + this.peerId + "running...");
 	}
 
@@ -55,35 +64,43 @@ public class Peer extends UnicastRemoteObject implements PeerInterface{
 		int mdrPort = Integer.parseInt(args[8]);
 		try {
 			Peer peer = new Peer(args[0], id, args[2], args[3], mcPort, args[5], mdbPort, args[7], mdrPort);
-		} catch(RemoteException e) {
+		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void startRMI(){
+	public void startRMI() {
 		try {
 			this.rmiReg = LocateRegistry.getRegistry();
 			rmiReg.rebind(this.accessPoint, this);
-		} catch(RemoteException e) {
+		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void startChannels(String mcA, int mcP, String mdbA, int mdbP, String mdrA, int mdrP) throws IOException{
-		this.mcListener = new Thread(new Listener(this, mcA, mcP));
-		this.mdbListener = new Thread(new Listener(this, mdbA, mdbP));
-		this.mdrListener = new Thread(new Listener(this, mdrA, mdrP));
+	public void startChannels(String mcA, int mcP, String mdbA, int mdbP, String mdrA, int mdrP) throws IOException {
 
-		this.mcListener.start();
-		this.mdbListener.start();
-		this.mdrListener.start();	
+		this.mcChannel = new Listener(this, mcA, mcP);
+		this.mdbChannel = new Listener(this, mdbA, mdbP);
+		this.mdrChannel = new Listener(this, mdrA, mdrP);
+
+		Thread mcListener = new Thread(this.mcChannel);
+		Thread mdbListener = new Thread(this.mdbChannel);
+		Thread mdrListener = new Thread(this.mdrChannel);
+
+		mcListener.start();
+		mdbListener.start();
+		mdrListener.start();
 	}
 
-
-
-
-	public void backup(String path, int ReplicationDeg) {
-
+	public void backup(String path, int replicationDeg) {
+		Thread t = new Thread(new Backup(this, path, replicationDeg));
+		t.start();
+		try {
+			t.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void delete(String path) {
@@ -102,6 +119,16 @@ public class Peer extends UnicastRemoteObject implements PeerInterface{
 		return "test";
 	}
 
+	public void sendToMc(Message m) throws IOException {
+
+		byte[] buf = m.toBytes();
+
+		DatagramPacket packet = new DatagramPacket(buf, buf.length, this.mcChannel.getAddress(),
+				this.mcChannel.getPort());
+		socket.send(packet);
+
+	}
+
 	/**
 	 * @return the peerId
 	 */
@@ -115,5 +142,54 @@ public class Peer extends UnicastRemoteObject implements PeerInterface{
 	public Disk getDisk() {
 		return disk;
 	}
-	
+
+	/**
+	 * @return the rmiReg
+	 */
+	public Registry getRmiReg() {
+		return rmiReg;
+	}
+
+	/**
+	 * @return the pVersion
+	 */
+	public String getpVersion() {
+		return pVersion;
+	}
+
+	/**
+	 * @return the accessPoint
+	 */
+	public String getAccessPoint() {
+		return accessPoint;
+	}
+
+	/**
+	 * @return the socket
+	 */
+	public MulticastSocket getSocket() {
+		return socket;
+	}
+
+	/**
+	 * @return the mcChannel
+	 */
+	public Listener getMcChannel() {
+		return mcChannel;
+	}
+
+	/**
+	 * @return the mdbChannel
+	 */
+	public Listener getMdbChannel() {
+		return mdbChannel;
+	}
+
+	/**
+	 * @return the mdrChannel
+	 */
+	public Listener getMdrChannel() {
+		return mdrChannel;
+	}
+
 }
