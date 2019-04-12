@@ -1,1 +1,1 @@
-javac .\src\chunk\*.java .\src\disk\*.java .\src\message\*.java .\src\peer\*.java .\src\peer\channels\*.java .\src\peer\protocols\backup\*.java .\src\peer\protocols\restore\*.java .\src\peer\protocols\delete\*.java -d .\bin
+javac .\src\utils\*.java .\src\chunk\*.java .\src\disk\*.java .\src\message\*.java .\src\peer\*.java .\src\peer\channels\*.java .\src\peer\protocols\backup\*.java .\src\peer\protocols\restore\*.java .\src\peer\protocols\delete\*.java -d .\bin
