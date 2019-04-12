@@ -1,5 +1,8 @@
 package peer.protocols.restore;
 
+import java.io.File;
+
+import chunk.Chunk;
 import message.Message;
 import peer.Peer;
 
@@ -9,21 +12,26 @@ import peer.Peer;
 public class Restore implements Runnable {
 
 	private Peer peer;
-	private String fileId;
+	private String filePath;
 
-	public Restore(Peer peer, String fileId) {
+	public Restore(Peer peer, String filePath) {
 		this.peer = peer;
-		this.fileId = fileId;
+		this.filePath = filePath;
 	}
 
 	public void sendGetChunk(int chunkNo) {
-		Message message = Message.parseGetChunkMessage(fileId, chunkNo, peer.getPeerId());
+		Message message = Message.parseGetChunkMessage(filePath, chunkNo, peer.getPeerId());
+		//send message
 	}
 
 	public void restore() {
-		
-		for (int i = 0;i < 10;i++) {
-			sendGetChunk(i);
+		File originalFile = new File(filePath);
+		if (!originalFile.exists()) {
+			return;
+		}
+		int chunksNo = Chunk.getNumberOfFileChunks(originalFile);
+		for (int i = 0;i < chunksNo;i++) {
+			sendGetChunk(i+1);
 		}
 	}
 
