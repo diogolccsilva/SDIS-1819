@@ -72,12 +72,23 @@ public class Message {
     public static Message parseDeleteMessage(String fileId, int senderId) {
         try {
             MessageHeader header = new MessageHeader("DELETE", "", senderId, fileId);
-            Message message = new Message(header,null);
+            Message message = new Message(header, null);
             return message;
         } catch (InvalidHeaderParameters e) {
             e.printStackTrace();
         }
         return null;
     }
+
+    public static Message parseGetChunkMessage(String fileId, int chunkNo, int senderId) {
+        try {
+            MessageHeader header = new MessageHeader("GETCHUNK", "", senderId, fileId, chunkNo);
+            Message message = new Message(header,null);
+            return message;
+        } catch (InvalidHeaderParameters e) {
+            e.printStackTrace();
+        }
+		return null;
+	}
 
 }
