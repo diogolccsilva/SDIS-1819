@@ -13,8 +13,10 @@ import java.io.IOException;
  */
 public class Disk {
 
-	public static String fileSeparator = System.getProperty("file.separator");
-	public static final String DEFAULT_DISK_LOCATION = "." + fileSeparator + "files" + fileSeparator + "peers"
+	public static final String fileSeparator = System.getProperty("file.separator");
+	public static final String filesPath = "." + fileSeparator + "files" + fileSeparator;
+	public static final String resourcesPath = filesPath + "resources" + fileSeparator;
+	public static final String defaultDiskLocation = filesPath + "peers"
 			+ fileSeparator;
 
 	private long size; /* Disk size in bytes */
@@ -41,7 +43,7 @@ public class Disk {
 	}
 
 	public Disk(String diskName, float size) {
-		this.diskLocation = DEFAULT_DISK_LOCATION + diskName;
+		this.diskLocation = defaultDiskLocation + diskName;
 		this.size = (long) (size * 1000);
 		createDiskDirectory();
 	}
@@ -57,7 +59,7 @@ public class Disk {
 	 * @return the defaultDiskLocation
 	 */
 	public static String getDefaultDiskLocation() {
-		return DEFAULT_DISK_LOCATION;
+		return defaultDiskLocation;
 	}
 
 	/**
@@ -198,7 +200,7 @@ public class Disk {
 		return new File(backupDirectory.getPath() + fileSeparator + fileId);
 	}
 
-	public Chunk parseFileToChunk(String fileId, File chunkFile) {
+	public static Chunk parseFileToChunk(String fileId, File chunkFile) {
 		String fileName = chunkFile.getName();
 		String parsedName[] = fileName.split("-");
 
