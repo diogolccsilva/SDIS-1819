@@ -11,6 +11,9 @@ import java.rmi.server.UnicastRemoteObject;
 import java.lang.Thread;
 
 public class Peer extends UnicastRemoteObject implements PeerInterface{
+	
+	private static final long serialVersionUID = 4988282307993613946L;
+	
 	private int peerId;
 	private Disk disk;
 
