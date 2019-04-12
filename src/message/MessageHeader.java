@@ -43,7 +43,18 @@ public class MessageHeader {
         this.replicaDeg = replicaDeg;
     }
 
-    public String getMessageType()
+    public MessageHeader(String messageType, String version, int senderId, String fileId)
+            throws InvalidHeaderParameters {
+        if (!this.messageType.equals("DELETE")){
+            throw new InvalidHeaderParameters();
+        }
+        this.messageType = messageType;
+        this.version = version;
+        this.senderId = senderId;
+        this.fileId = fileId;
+	}
+
+	public String getMessageType()
     {
         return this.messageType;
     }
