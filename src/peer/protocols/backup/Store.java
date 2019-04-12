@@ -1,6 +1,7 @@
 package peer.protocols.backup;
 
 import chunk.Chunk;
+import disk.ChunkManagement;
 import message.Message;
 import peer.Peer;
 
@@ -22,9 +23,16 @@ public class Store implements Runnable {
 	}
 
 	public boolean storeChunk() {
-		if (peer.getDisk().storeChunk(chunk)) {
-			sendStored();
-			return true;
+		try {
+			Thread.sleep((long) (Math.random() * 400 + 1));
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		if (ChunkManagement.getInstance().getStores(chunk.getFileID(), chunk.getChunkNo()) < chunk.getRepDegree()) {
+			if (peer.getDisk().storeChunk(chunk)) {
+				sendStored();
+				return true;
+			}
 		}
 		return false;
 	}

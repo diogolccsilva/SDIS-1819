@@ -12,8 +12,9 @@ public class BackupChunk implements Runnable{
 	private Chunk chunk;
 	private Peer peer;
 
-	public BackupChunk(Chunk chunk) {
+	public BackupChunk(Peer peer, Chunk chunk) {
 		this.chunk = chunk;
+		this.peer = peer;
 	}
 
 	public boolean backupChunk() {
