@@ -3,8 +3,11 @@ package chunk;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import javax.xml.bind.DatatypeConverter;
 
 public class Chunk {
     public static final int CHUNK_MAX_SIZE = 64000;
@@ -68,6 +71,7 @@ public class Chunk {
         long nFileBytes = file.length();
         int nChunks = getNumberOfFileChunks(file);
         Chunk[] chunks = new Chunk[nChunks];
+        String fileId = generateFileId(file);
         try (RandomAccessFile data = new RandomAccessFile(file, "r")) {
             int nReadBytes = 0;
             for (int i = 0; i < nChunks; i++) {
@@ -98,8 +102,16 @@ public class Chunk {
             e.printStackTrace();
             return null;
         }
-        byte[] encodedhash = digest.digest((file.getName() + file.getTotalSpace()).getBytes());
-        return encodedhash.toString();
+        String toEncode = file.getName() + Long.toString(file.length());
+        System.out.println(toEncode);
+        byte[] encodedhash;
+        try {
+            encodedhash = digest.digest(toEncode.getBytes("UTF-8"));
+            return DatatypeConverter.printBase64Binary(encodedhash);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return "invalid";
     }
 
     public static void sortChunkArray(Chunk[] chunks) {

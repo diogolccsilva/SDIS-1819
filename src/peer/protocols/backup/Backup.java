@@ -23,6 +23,7 @@ public class Backup implements Runnable {
 	public void backupFile() {
 		Chunk[] chunks = Chunk.splitFile(file, repDegree);
 		for (int i = 0;i<chunks.length;i++){
+			System.out.println("BackupFile iteration: " + i + " chunkNo: " + chunks[i].getChunkNo() + " fileId: " + chunks[i].getFileID());
 			BackupChunk backupChunk = new BackupChunk(peer, chunks[i]);
 			Thread bThread = new Thread(backupChunk);
 			bThread.start();

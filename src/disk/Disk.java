@@ -18,6 +18,7 @@ public class Disk {
 	public static final String resourcesPath = filesPath + "resources" + fileSeparator;
 	public static final String defaultDiskLocation = filesPath + "peers"
 			+ fileSeparator;
+	public static final long defaultDiskSize = 1000000; /* Disk size in KBytes */
 
 	private long size; /* Disk size in bytes */
 	private String diskLocation;
@@ -43,7 +44,7 @@ public class Disk {
 	}
 
 	public Disk(String diskName) {
-		this(diskName, 100);
+		this(diskName, defaultDiskSize);
 	}
 
 	public Disk(String diskName, float size) {
