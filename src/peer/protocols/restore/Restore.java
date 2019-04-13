@@ -5,6 +5,8 @@ import java.io.File;
 import chunk.Chunk;
 import message.Message;
 import peer.Peer;
+import peer.channels.Sender;
+import peer.channels.SenderUDP;
 
 /**
  * Restore
@@ -21,7 +23,10 @@ public class Restore implements Runnable {
 
 	public void sendGetChunk(int chunkNo) {
 		Message message = Message.parseGetChunkMessage(filePath, chunkNo, peer.getPeerId());
-		//send message
+		Sender sender = new SenderUDP();
+		sender.init(peer.getMcAddress(), peer.getMcPort());
+		sender.send(message.getBody());
+		sender.destroy();
 	}
 
 	public void restore() {
