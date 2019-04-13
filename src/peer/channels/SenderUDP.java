@@ -22,7 +22,6 @@ public class SenderUDP implements Sender {
 		try {
 			socket.send(packet);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -32,7 +31,6 @@ public class SenderUDP implements Sender {
 		try {
 			socket = new DatagramSocket(port, address);
 		} catch (SocketException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

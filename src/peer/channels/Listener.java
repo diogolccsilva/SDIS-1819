@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
+
+import message.Message;
+
 import java.net.DatagramPacket;
 
 public class Listener implements Runnable {
@@ -39,7 +42,7 @@ public class Listener implements Runnable {
         }
 
         while (true) {
-            byte[] buf = new byte[64000];
+            byte[] buf = new byte[Message.MESSAGE_PACKET_MAX_SIZE];
 
             DatagramPacket packet = new DatagramPacket(buf, buf.length);
             try {

@@ -1,6 +1,7 @@
 package peer.protocols.restore;
 
 import java.io.File;
+import java.io.IOException;
 
 import chunk.Chunk;
 import message.Message;
@@ -23,20 +24,23 @@ public class Restore implements Runnable {
 
 	public void sendGetChunk(int chunkNo) {
 		Message message = Message.parseGetChunkMessage(filePath, chunkNo, peer.getPeerId());
-		Sender sender = new SenderUDP();
-		sender.init(peer.getMcAddress(), peer.getMcPort());
-		sender.send(message.getBody());
-		sender.destroy();
+		System.out.println("Sending GETCHUNK " + chunkNo);
+		try {
+			peer.sendToMc(message);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void restore() {
 		File originalFile = new File(filePath);
 		if (!originalFile.exists()) {
+			System.out.println("file not found");
 			return;
 		}
 		int chunksNo = Chunk.getNumberOfFileChunks(originalFile);
-		for (int i = 0;i < chunksNo;i++) {
-			sendGetChunk(i+1);
+		for (int i = 0; i < chunksNo; i++) {
+			sendGetChunk(i + 1);
 		}
 	}
 
@@ -45,5 +49,4 @@ public class Restore implements Runnable {
 		restore();
 	}
 
-	
 }

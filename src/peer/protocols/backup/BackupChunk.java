@@ -1,5 +1,7 @@
 package peer.protocols.backup;
 
+import java.io.IOException;
+
 import chunk.Chunk;
 import message.Message;
 import peer.Peer;
@@ -17,9 +19,17 @@ public class BackupChunk implements Runnable{
 		this.peer = peer;
 	}
 
-	public boolean backupChunk() {
+	public void sendPutChunk() {
 		Message message = Message.parsePutChunkMessage(chunk, peer.getPeerId());
-		
+		try {
+			peer.sendToMdb(message);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public boolean backupChunk() {
+		sendPutChunk();
 		return true;
 	}
 

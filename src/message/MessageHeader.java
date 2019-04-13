@@ -13,28 +13,28 @@ public class MessageHeader {
         this.version = sArray[1];
         this.senderId = Integer.parseInt(sArray[2]);
         this.fileId = sArray[3];
-        if (this.messageType.equals("PUTCHUNK") || this.messageType.equals("STORED") || this.messageType.equals("GETCHUNK") || this.messageType.equals("REMOVED")){
+        if (this.messageType.equals("PUTCHUNK") || this.messageType.equals("STORED")
+                || this.messageType.equals("GETCHUNK") || this.messageType.equals("REMOVED")) {
             this.chunkNo = Integer.parseInt(sArray[4]);
         }
-        if (this.messageType.equals("PUTCHUNK")){
+        if (this.messageType.equals("PUTCHUNK")) {
             this.replicaDeg = Integer.parseInt(sArray[5]);
         }
     }
 
     public MessageHeader(String messageType, String version, int senderId, String fileId, int chunkNo)
             throws InvalidHeaderParameters {
-        if (this.messageType.equals("PUTCHUNK")){
+        this.messageType = messageType;
+        if (this.messageType.equals("PUTCHUNK")) {
             throw new InvalidHeaderParameters();
         }
-        this.messageType = messageType;
         this.version = version;
         this.senderId = senderId;
         this.fileId = fileId;
         this.chunkNo = chunkNo;
     }
 
-    public MessageHeader(String messageType, String version, int senderId, String fileId, int chunkNo, int replicaDeg)
-    {
+    public MessageHeader(String messageType, String version, int senderId, String fileId, int chunkNo, int replicaDeg) {
         this.messageType = messageType;
         this.version = version;
         this.senderId = senderId;
@@ -45,48 +45,57 @@ public class MessageHeader {
 
     public MessageHeader(String messageType, String version, int senderId, String fileId)
             throws InvalidHeaderParameters {
-        if (!this.messageType.equals("DELETE")){
+        if (!this.messageType.equals("DELETE")) {
             throw new InvalidHeaderParameters();
         }
         this.messageType = messageType;
         this.version = version;
         this.senderId = senderId;
         this.fileId = fileId;
-	}
+    }
 
-	public String getMessageType()
-    {
+    public String getMessageType() {
         return this.messageType;
     }
 
-    public String getVersion()
-    {
+    public String getVersion() {
         return this.version;
     }
 
-    public int getSenderId()
-    {
+    public int getSenderId() {
         return this.senderId;
     }
 
-    public String getFileId()
-    {
+    public String getFileId() {
         return this.fileId;
     }
 
-    public int getChunkNo()
-    {
+    public int getChunkNo() {
         return this.chunkNo;
     }
 
-    public int getReplicaDeg()
-    {
+    public int getReplicaDeg() {
         return this.replicaDeg;
     }
 
     @Override
-    public String toString()
-    {
-        return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + this.fileId + " " + Integer.toString(this.chunkNo) + " " + Integer.toString(this.replicaDeg)+"\r\n\r\n";
+    public String toString() {
+        switch (messageType) {
+        case "GETCHUNK":
+            return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + this.fileId
+                    + " " + Integer.toString(this.chunkNo) + "\r\n\r\n";
+        case "PUTCHUNK":
+            return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + this.fileId
+                    + " " + Integer.toString(this.chunkNo) + " " + Integer.toString(this.replicaDeg) + "\r\n\r\n";
+        case "STORED":
+            return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + this.fileId
+                    + " " + Integer.toString(this.chunkNo) + "\r\n\r\n";
+        default:
+            return "";
+        }
+        // return this.messageType + " " + this.version + " " +
+        // Integer.toString(this.senderId) + " " + this.fileId + " " +
+        // Integer.toString(this.chunkNo) + " " +
+        // Integer.toString(this.replicaDeg)+"\r\n\r\n";
     }
 }

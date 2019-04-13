@@ -1,1 +1,1 @@
-java -cp .\bin peer.Peer 
+java -cp .\bin peer.Peer 1 1 accesspoint "224.0.0.2" 50 "224.0.0.3" 50 "224.0.0.4" 50

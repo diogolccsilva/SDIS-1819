@@ -29,7 +29,8 @@ public class Message {
         byte[] result;
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bos.write(header.toString().getBytes());
-        bos.write(body);
+        if (body != null)
+            bos.write(body);
         result = bos.toByteArray();
         return result;
     }
@@ -83,12 +84,12 @@ public class Message {
     public static Message parseGetChunkMessage(String fileId, int chunkNo, int senderId) {
         try {
             MessageHeader header = new MessageHeader("GETCHUNK", "", senderId, fileId, chunkNo);
-            Message message = new Message(header,null);
+            Message message = new Message(header, null);
             return message;
         } catch (InvalidHeaderParameters e) {
             e.printStackTrace();
         }
-		return null;
-	}
+        return null;
+    }
 
 }
