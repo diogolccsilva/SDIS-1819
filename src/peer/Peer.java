@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -45,6 +46,18 @@ public class Peer extends UnicastRemoteObject implements PeerInterface {
 		super();
 		this.peerId = sid;
 
+		try {
+			this.mcAddress = InetAddress.getByName(mcAddress);
+			this.mdbAddress = InetAddress.getByName(mdbAddress);
+			this.mdrAddress = InetAddress.getByName(mdrAddress);
+		} catch (UnknownHostException e1) {
+			e1.printStackTrace();
+		}
+
+		this.mcPort = mcPort;
+		this.mdbPort = mdbPort;
+		this.mdrPort = mdrPort;
+
 		this.disk = new Disk("peer" + peerId);
 		this.pVersion = pVersion;
 		this.accessPoint = accessPoint;
@@ -55,7 +68,7 @@ public class Peer extends UnicastRemoteObject implements PeerInterface {
 			e.printStackTrace();
 		}
 
-		this.startRMI();
+		// this.startRMI();
 
 		try {
 			this.startChannels(mcAddress, mcPort, mdbAddress, mdbPort, mdrAddress, mdrPort);
@@ -91,12 +104,6 @@ public class Peer extends UnicastRemoteObject implements PeerInterface {
 	}
 
 	public void startChannels(String mcA, int mcP, String mdbA, int mdbP, String mdrA, int mdrP) throws IOException {
-		this.mcAddress = InetAddress.getByName(mcA);
-		this.mdbAddress = InetAddress.getByName(mdbA);
-		this.mdrAddress = InetAddress.getByName(mdrA);
-		this.mcPort = mcP;
-		this.mdbPort = mdbP;
-		this.mdrPort = mdrP;
 
 		this.mcChannel = new Listener(this, mcA, mcP);
 		this.mdbChannel = new Listener(this, mdbA, mdbP);
@@ -126,9 +133,10 @@ public class Peer extends UnicastRemoteObject implements PeerInterface {
 	}
 
 	public void restore(String path) {
-		Restore restore = new Restore(this,path);
+		Restore restore = new Restore(this, path);
 		Thread restoreThread = new Thread(restore);
 		restoreThread.start();
+		System.out.println("Started restoring " + path);
 	}
 
 	public void reclaim(float space) {
