@@ -19,7 +19,7 @@ public class Delete implements Runnable {
 	}
 
 	public void sendDelete() {
-		Message message = Message.parseDeleteMessage(fileId, peer.getPeerId());
+		Message message = Message.parseDeleteMessage(fileId, peer);
 		try {
 			peer.sendToMc(message);
 		} catch (IOException e) {

@@ -20,7 +20,7 @@ public class BackupChunk implements Runnable{
 	}
 
 	public void sendPutChunk() {
-		Message message = Message.parsePutChunkMessage(chunk, peer.getPeerId());
+		Message message = Message.parsePutChunkMessage(chunk, peer);
 		try {
 			peer.sendToMdb(message);
 		} catch (IOException e) {

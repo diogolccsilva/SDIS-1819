@@ -21,7 +21,7 @@ public class Store implements Runnable {
 	}
 
 	public void sendStored() {
-		Message storedMessage = Message.parseStoredMessage(chunk, peer.getPeerId());
+		Message storedMessage = Message.parseStoredMessage(chunk, peer);
 		try {
 			peer.sendToMc(storedMessage);
 		} catch (IOException e) {

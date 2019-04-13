@@ -22,7 +22,7 @@ public class GetChunk implements Runnable{
     }
 
     public void sendChunk(Chunk chunk) {
-        Message message = Message.parseChunkMessage(chunk,peer.getPeerId());
+        Message message = Message.parseChunkMessage(chunk,peer);
         try {
 			peer.sendToMc(message);
 		} catch (IOException e) {
