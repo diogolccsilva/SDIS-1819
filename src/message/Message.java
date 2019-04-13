@@ -92,4 +92,15 @@ public class Message {
         return null;
     }
 
+	public static Message parseChunkMessage(Chunk chunk, int senderId) {
+		try {
+            MessageHeader header = new MessageHeader("CHUNK", "", senderId, chunk.getFileID(), chunk.getChunkNo());
+            Message message = new Message(header, chunk.getData());
+            return message;
+        } catch (InvalidHeaderParameters e) {
+            e.printStackTrace();
+        }
+        return null;
+	}
+
 }
