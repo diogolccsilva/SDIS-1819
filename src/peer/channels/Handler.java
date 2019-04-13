@@ -7,6 +7,7 @@ import chunk.Chunk;
 import disk.ChunkManagement;
 import peer.Peer;
 import peer.protocols.backup.Store;
+import peer.protocols.restore.GetChunk;
 import message.*;
 
 public class Handler implements Runnable {
@@ -65,7 +66,15 @@ public class Handler implements Runnable {
     }
 
     public void handleGETCHUNK() {
-
+        String fileId = this.msgHeader.getFileId();
+        int chunkNo = this.msgHeader.getChunkNo();
+        Thread t = new Thread(new GetChunk(peer, fileId, chunkNo));
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void handleCHUNK() {

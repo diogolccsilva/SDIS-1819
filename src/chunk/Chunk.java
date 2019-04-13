@@ -103,7 +103,6 @@ public class Chunk {
             return null;
         }
         String toEncode = file.getName() + Long.toString(file.length());
-        System.out.println(toEncode);
         byte[] encodedhash;
         try {
             encodedhash = digest.digest(toEncode.getBytes("UTF-8"));

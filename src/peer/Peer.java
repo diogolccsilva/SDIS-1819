@@ -93,7 +93,7 @@ public class Peer /*extends UnicastRemoteObject*/ implements PeerInterface {
 			return;
 		}
 		String filePath = Disk.resourcesPath + "test5.pdf";
-		//peer.restore(Disk.resourcesPath + "loremipsum.pdf");
+		//peer.restore(filePath);
 		peer.backup(filePath, 1);
 	}
 

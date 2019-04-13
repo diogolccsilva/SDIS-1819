@@ -1,6 +1,7 @@
 package message;
 
 import chunk.Chunk;
+import peer.Peer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -51,17 +52,17 @@ public class Message {
      * myString.matches(".* [0-9].[0-9] [0-9]+ .{32} .{6} [0-9]\r\n\r\n(.*)?"); }
      */
 
-    public static Message parsePutChunkMessage(Chunk chunk, int senderId) {
-        MessageHeader header = new MessageHeader("PUTCHUNK", "", senderId, chunk.getFileID(), chunk.getChunkNo(),
+    public static Message parsePutChunkMessage(Chunk chunk, Peer peer) {
+        MessageHeader header = new MessageHeader("PUTCHUNK", peer.getpVersion(), peer.getPeerId(), chunk.getFileID(), chunk.getChunkNo(),
                 chunk.getRepDegree());
         Message message = new Message(header, chunk.getData());
 
         return message;
     }
 
-    public static Message parseStoredMessage(Chunk chunk, int senderId) {
+    public static Message parseStoredMessage(Chunk chunk, Peer peer) {
         try {
-            MessageHeader header = new MessageHeader("STORED", "", senderId, chunk.getFileID(), chunk.getChunkNo());
+            MessageHeader header = new MessageHeader("STORED", peer.getpVersion(), peer.getPeerId(), chunk.getFileID(), chunk.getChunkNo());
             Message message = new Message(header, null);
             return message;
         } catch (InvalidHeaderParameters e) {
@@ -70,9 +71,9 @@ public class Message {
         return null;
     }
 
-    public static Message parseDeleteMessage(String fileId, int senderId) {
+    public static Message parseDeleteMessage(String fileId, Peer peer) {
         try {
-            MessageHeader header = new MessageHeader("DELETE", "", senderId, fileId);
+            MessageHeader header = new MessageHeader("DELETE", peer.getpVersion(), peer.getPeerId(), fileId);
             Message message = new Message(header, null);
             return message;
         } catch (InvalidHeaderParameters e) {
@@ -81,9 +82,9 @@ public class Message {
         return null;
     }
 
-    public static Message parseGetChunkMessage(String fileId, int chunkNo, int senderId) {
+    public static Message parseGetChunkMessage(String fileId, int chunkNo, Peer peer) {
         try {
-            MessageHeader header = new MessageHeader("GETCHUNK", "", senderId, fileId, chunkNo);
+            MessageHeader header = new MessageHeader("GETCHUNK", peer.getpVersion(), peer.getPeerId(), fileId, chunkNo);
             Message message = new Message(header, null);
             return message;
         } catch (InvalidHeaderParameters e) {
@@ -92,9 +93,9 @@ public class Message {
         return null;
     }
 
-	public static Message parseChunkMessage(Chunk chunk, int senderId) {
+	public static Message parseChunkMessage(Chunk chunk, Peer peer) {
 		try {
-            MessageHeader header = new MessageHeader("CHUNK", "", senderId, chunk.getFileID(), chunk.getChunkNo());
+            MessageHeader header = new MessageHeader("CHUNK", peer.getpVersion(), peer.getPeerId(), chunk.getFileID(), chunk.getChunkNo());
             Message message = new Message(header, chunk.getData());
             return message;
         } catch (InvalidHeaderParameters e) {

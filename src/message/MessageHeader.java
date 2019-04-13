@@ -8,13 +8,15 @@ public class MessageHeader {
     private int senderId, chunkNo, replicaDeg;
 
     public MessageHeader(String rawHeader) {
+        System.out.println("Messageheader: " + rawHeader);
         String[] sArray = rawHeader.split(" ");
         this.messageType = sArray[0];
         this.version = sArray[1];
         this.senderId = Integer.parseInt(sArray[2]);
         this.fileId = sArray[3];
+        System.out.println("fileid: " + fileId);
         if (this.messageType.equals("PUTCHUNK") || this.messageType.equals("STORED")
-                || this.messageType.equals("GETCHUNK") || this.messageType.equals("REMOVED")) {
+                || this.messageType.equals("GETCHUNK") || this.messageType.equals("REMOVED") || this.messageType.equals("CHUNK")) {
             this.chunkNo = Integer.parseInt(sArray[4]);
         }
         if (this.messageType.equals("PUTCHUNK")) {
@@ -88,6 +90,9 @@ public class MessageHeader {
             return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + this.fileId
                     + " " + Integer.toString(this.chunkNo) + " " + Integer.toString(this.replicaDeg) + "\r\n\r\n";
         case "STORED":
+            return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + this.fileId
+                    + " " + Integer.toString(this.chunkNo) + "\r\n\r\n";
+        case "CHUNK":
             return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + this.fileId
                     + " " + Integer.toString(this.chunkNo) + "\r\n\r\n";
         default:

@@ -18,14 +18,16 @@ public class Restore implements Runnable {
 
 	private Peer peer;
 	private String filePath;
+	private File file;
 
 	public Restore(Peer peer, String filePath) {
 		this.peer = peer;
 		this.filePath = filePath;
+		file = new File(filePath);
 	}
 
 	public void sendGetChunk(int chunkNo) {
-		Message message = Message.parseGetChunkMessage(filePath, chunkNo, peer.getPeerId());
+		Message message = Message.parseGetChunkMessage(Chunk.generateFileId(file), chunkNo, peer);
 		try {
 			peer.sendToMc(message);
 		} catch (IOException e) {
@@ -50,6 +52,7 @@ public class Restore implements Runnable {
 				Chunk chunk = queue.take();
 				if (chunk.getFileID().equals(fileId)){
 					chunks[i] = chunk;
+					System.out.println("received chunk " + chunk.getChunkNo());
 				}
 				else {
 					queue.put(chunk);
