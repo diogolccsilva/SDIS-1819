@@ -1,5 +1,7 @@
 package peer.protocols.delete;
 
+import java.io.IOException;
+
 import message.Message;
 import peer.Peer;
 
@@ -18,6 +20,11 @@ public class Delete implements Runnable {
 
 	public void sendDelete() {
 		Message message = Message.parseDeleteMessage(fileId, peer.getPeerId());
+		try {
+			peer.sendToMc(message);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void delete() {
@@ -27,7 +34,7 @@ public class Delete implements Runnable {
 
 	@Override
 	public void run() {
-
+		delete();
 	}
 
 	

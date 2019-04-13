@@ -90,7 +90,7 @@ public class Chunk {
         return chunks;
     }
 
-    private static String generateFileId(File file) {
+    public static String generateFileId(File file) {
         MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("SHA-256");

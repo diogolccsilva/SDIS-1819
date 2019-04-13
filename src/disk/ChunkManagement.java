@@ -3,7 +3,10 @@ package disk;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
+import chunk.Chunk;
 import javafx.util.Pair;
 
 /**
@@ -15,8 +18,11 @@ public class ChunkManagement {
 
 	private Map<String, Map<Integer, Integer>> storesCounter;
 
+	private BlockingQueue<Chunk> restoreChunks;
+
 	private ChunkManagement() {
 		storesCounter = new HashMap<String, Map<Integer, Integer>>();
+		restoreChunks = new LinkedBlockingDeque<Chunk>();
 	}
 
 	public static ChunkManagement getInstance() {
@@ -45,4 +51,16 @@ public class ChunkManagement {
 	public void deleteStores(String fileId) {
 		storesCounter.remove(fileId);
 	}
+
+	public void addRestoreChunk(Chunk chunk) {
+		restoreChunks.add(chunk);
+	}
+
+	/**
+	 * @return the restoreChunks
+	 */
+	public BlockingQueue<Chunk> getRestoreChunks() {
+		return restoreChunks;
+	}
+
 }

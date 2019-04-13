@@ -35,7 +35,11 @@ public class Disk {
 		Chunk chunk3 = disk.getChunk("2", 3);
 		disk.deleteChunk("2", 2);
 		Chunk[] chunks = Chunk.splitFile(args[0], 1);
-		Chunk.restoreFile(chunks, disk.getRestoredDirectoryPath() + fileSeparator + "file1.pdf");
+		disk.restoreFile(chunks);
+	}
+
+	public void restoreFile(Chunk[] chunks) {
+		Chunk.restoreFile(chunks, getRestoredDirectoryPath() + fileSeparator + "file1.pdf");
 	}
 
 	public Disk(String diskName) {

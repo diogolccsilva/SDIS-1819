@@ -2,8 +2,10 @@ package peer.protocols.restore;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.BlockingQueue;
 
 import chunk.Chunk;
+import disk.ChunkManagement;
 import message.Message;
 import peer.Peer;
 import peer.channels.Sender;
@@ -24,7 +26,6 @@ public class Restore implements Runnable {
 
 	public void sendGetChunk(int chunkNo) {
 		Message message = Message.parseGetChunkMessage(filePath, chunkNo, peer.getPeerId());
-		System.out.println("Sending GETCHUNK " + chunkNo);
 		try {
 			peer.sendToMc(message);
 		} catch (IOException e) {
@@ -39,9 +40,25 @@ public class Restore implements Runnable {
 			return;
 		}
 		int chunksNo = Chunk.getNumberOfFileChunks(originalFile);
+		Chunk[] chunks = new Chunk[chunksNo];
+		String fileId = Chunk.generateFileId(originalFile);
 		for (int i = 0; i < chunksNo; i++) {
 			sendGetChunk(i + 1);
+			BlockingQueue<Chunk> queue = ChunkManagement.getInstance().getRestoreChunks();
+			try {
+				System.out.println("Waiting for chunk " + (i+1));
+				Chunk chunk = queue.take();
+				if (chunk.getFileID().equals(fileId)){
+					chunks[i] = chunk;
+				}
+				else {
+					queue.put(chunk);
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
+		peer.getDisk().restoreFile(chunks);
 	}
 
 	@Override
