@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 
 import chunk.Chunk;
+import disk.ChunkManagement;
 import peer.Peer;
 import message.*;
 
@@ -66,7 +67,9 @@ public class Handler implements Runnable {
     }
 
     public void handleCHUNK(){
+        Chunk chunk = new Chunk(this.msgHeader.getFileId(), this.msgHeader.getChunkNo(), this.msgHeader.getReplicaDeg(),  this.msg.getBody());
 
+        ChunkManagement.getInstance().addRestoreChunk(chunk);
     }
 
     public void handleDELETE(){
