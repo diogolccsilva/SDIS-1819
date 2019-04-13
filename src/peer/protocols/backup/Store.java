@@ -1,5 +1,7 @@
 package peer.protocols.backup;
 
+import java.io.IOException;
+
 import chunk.Chunk;
 import disk.ChunkManagement;
 import message.Message;
@@ -20,6 +22,11 @@ public class Store implements Runnable {
 
 	public void sendStored() {
 		Message storedMessage = Message.parseStoredMessage(chunk, peer.getPeerId());
+		try {
+			peer.sendToMc(storedMessage);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public boolean storeChunk() {

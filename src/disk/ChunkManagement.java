@@ -33,6 +33,12 @@ public class ChunkManagement {
 	}
 
 	public int getStores(String fileId, int chunkNo) {
+		if (!storesCounter.containsKey(fileId)){
+			return 0;
+		}
+		if (!storesCounter.get(fileId).containsKey(chunkNo)){
+			return 0;
+		}
 		return storesCounter.get(fileId).get(chunkNo);
 	}
 

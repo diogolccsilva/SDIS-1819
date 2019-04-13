@@ -43,7 +43,7 @@ public class Disk {
 	}
 
 	public Disk(String diskName) {
-		this(diskName, 1);
+		this(diskName, 100);
 	}
 
 	public Disk(String diskName, float size) {

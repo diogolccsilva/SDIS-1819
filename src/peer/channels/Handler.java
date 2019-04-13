@@ -6,6 +6,7 @@ import java.net.DatagramPacket;
 import chunk.Chunk;
 import disk.ChunkManagement;
 import peer.Peer;
+import peer.protocols.backup.Store;
 import message.*;
 
 public class Handler implements Runnable {
@@ -15,7 +16,7 @@ public class Handler implements Runnable {
     Message msg;
     MessageHeader msgHeader;
 
-    public Handler(Peer peer, DatagramPacket packet){
+    public Handler(Peer peer, DatagramPacket packet) {
         this.peer = peer;
         this.packet = packet;
     }
@@ -26,11 +27,11 @@ public class Handler implements Runnable {
         this.msgHeader = msg.getHeader();
 
         if (this.peer.getPeerId() != this.msgHeader.getSenderId())
-        switch (this.msgHeader.getMessageType()){
+            switch (this.msgHeader.getMessageType()) {
             case "PUTCHUNK":
                 handlePUTCHUNK();
                 break;
-            case "GETCHUNK": 
+            case "GETCHUNK":
                 handleGETCHUNK();
                 break;
             case "CHUNK":
@@ -41,44 +42,44 @@ public class Handler implements Runnable {
                 break;
             default:
                 break;
-        }
+            }
     }
 
-    public void handlePUTCHUNK(){
-        if (this.peer.getDisk().getFreeSpace() < (packet.getLength())){
-            System.out.println("Peer " + this.peer.getPeerId() +"- PUTCHUNK request: Not enough space to store chunk");
+    public void handlePUTCHUNK() {
+        if (this.peer.getDisk().getFreeSpace() < (packet.getLength())) {
+            System.out.println("Peer " + this.peer.getPeerId() + "- PUTCHUNK request: Not enough space to store chunk");
             return;
         }
 
-        Chunk chunk = new Chunk(this.msgHeader.getFileId(), this.msgHeader.getChunkNo(), this.msgHeader.getReplicaDeg(),  this.msg.getBody());
-        this.peer.getDisk().storeChunk(chunk);
-        this.sendSTORED(chunk);
+        Chunk chunk = new Chunk(this.msgHeader.getFileId(), this.msgHeader.getChunkNo(), this.msgHeader.getReplicaDeg(),
+                this.msg.getBody());
 
-        Message m = Message.parseStoredMessage(chunk, this.peer.getPeerId());
-        try{
-            this.peer.sendToMc(m);
-        } catch(IOException e) {
+        Thread t = new Thread(new Store(peer, chunk));
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
     }
 
-    public void handleGETCHUNK(){
-        
+    public void handleGETCHUNK() {
+
     }
 
-    public void handleCHUNK(){
-        Chunk chunk = new Chunk(this.msgHeader.getFileId(), this.msgHeader.getChunkNo(), this.msgHeader.getReplicaDeg(),  this.msg.getBody());
+    public void handleCHUNK() {
+        Chunk chunk = new Chunk(this.msgHeader.getFileId(), this.msgHeader.getChunkNo(), this.msgHeader.getReplicaDeg(),
+                this.msg.getBody());
 
         ChunkManagement.getInstance().addRestoreChunk(chunk);
     }
 
-    public void handleDELETE(){
+    public void handleDELETE() {
 
     }
 
     public void sendSTORED(Chunk chunk) {
-        
-
 
     }
 }
