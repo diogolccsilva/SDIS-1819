@@ -2,6 +2,7 @@ package peer;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -12,6 +13,7 @@ import disk.Disk;
 import message.Message;
 import peer.channels.Listener;
 import peer.protocols.backup.Backup;
+import peer.protocols.restore.Restore;
 
 public class Peer extends UnicastRemoteObject implements PeerInterface {
 
@@ -26,6 +28,13 @@ public class Peer extends UnicastRemoteObject implements PeerInterface {
 	private String accessPoint;
 
 	private MulticastSocket socket;
+
+	private InetAddress mcAddress;
+	private InetAddress mdbAddress;
+	private InetAddress mdrAddress;
+	private int mcPort;
+	private int mdbPort;
+	private int mdrPort;
 
 	private Listener mcChannel;
 	private Listener mdbChannel;
@@ -62,11 +71,14 @@ public class Peer extends UnicastRemoteObject implements PeerInterface {
 		int mcPort = Integer.parseInt(args[4]);
 		int mdbPort = Integer.parseInt(args[6]);
 		int mdrPort = Integer.parseInt(args[8]);
+		Peer peer;
 		try {
-			Peer peer = new Peer(args[0], id, args[2], args[3], mcPort, args[5], mdbPort, args[7], mdrPort);
+			peer = new Peer(args[0], id, args[2], args[3], mcPort, args[5], mdbPort, args[7], mdrPort);
 		} catch (RemoteException e) {
 			e.printStackTrace();
+			return;
 		}
+		peer.restore(Disk.resourcesPath + "loremipsum.pdf");
 	}
 
 	public void startRMI() {
@@ -79,6 +91,12 @@ public class Peer extends UnicastRemoteObject implements PeerInterface {
 	}
 
 	public void startChannels(String mcA, int mcP, String mdbA, int mdbP, String mdrA, int mdrP) throws IOException {
+		this.mcAddress = InetAddress.getByName(mcA);
+		this.mdbAddress = InetAddress.getByName(mdbA);
+		this.mdrAddress = InetAddress.getByName(mdrA);
+		this.mcPort = mcP;
+		this.mdbPort = mdbP;
+		this.mdrPort = mdrP;
 
 		this.mcChannel = new Listener(this, mcA, mcP);
 		this.mdbChannel = new Listener(this, mdbA, mdbP);
@@ -108,7 +126,9 @@ public class Peer extends UnicastRemoteObject implements PeerInterface {
 	}
 
 	public void restore(String path) {
-
+		Restore restore = new Restore(this,path);
+		Thread restoreThread = new Thread(restore);
+		restoreThread.start();
 	}
 
 	public void reclaim(float space) {
@@ -190,6 +210,48 @@ public class Peer extends UnicastRemoteObject implements PeerInterface {
 	 */
 	public Listener getMdrChannel() {
 		return mdrChannel;
+	}
+
+	/**
+	 * @return the mcAddress
+	 */
+	public InetAddress getMcAddress() {
+		return mcAddress;
+	}
+
+	/**
+	 * @return the mcPort
+	 */
+	public int getMcPort() {
+		return mcPort;
+	}
+
+	/**
+	 * @return the mdbAddress
+	 */
+	public InetAddress getMdbAddress() {
+		return mdbAddress;
+	}
+
+	/**
+	 * @return the mdbPort
+	 */
+	public int getMdbPort() {
+		return mdbPort;
+	}
+
+	/**
+	 * @return the mdrAddress
+	 */
+	public InetAddress getMdrAddress() {
+		return mdrAddress;
+	}
+
+	/**
+	 * @return the mdrPort
+	 */
+	public int getMdrPort() {
+		return mdrPort;
 	}
 
 }
