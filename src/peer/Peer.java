@@ -13,6 +13,7 @@ import disk.Disk;
 import message.Message;
 import peer.channels.Listener;
 import peer.protocols.backup.Backup;
+import peer.protocols.delete.Delete;
 import peer.protocols.restore.Restore;
 
 public class Peer extends UnicastRemoteObject implements PeerInterface {
@@ -122,13 +123,23 @@ public class Peer extends UnicastRemoteObject implements PeerInterface {
 	}
 
 	public void delete(String path) {
-
+		Thread t = new Thread(new Delete(this, path));
+		t.start();
+		try {
+			t.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void restore(String path) {
-		Restore restore = new Restore(this,path);
-		Thread restoreThread = new Thread(restore);
-		restoreThread.start();
+		Thread t = new Thread(new Restore(this, path));
+		t.start();
+		try {
+			t.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void reclaim(float space) {
@@ -145,6 +156,25 @@ public class Peer extends UnicastRemoteObject implements PeerInterface {
 
 		DatagramPacket packet = new DatagramPacket(buf, buf.length, this.mcChannel.getAddress(),
 				this.mcChannel.getPort());
+		socket.send(packet);
+
+	}
+
+	public void sendToMdb(Message m) throws IOException {
+
+		byte[] buf = m.toBytes();
+
+		DatagramPacket packet = new DatagramPacket(buf, buf.length, this.mdbChannel.getAddress(),
+				this.mdbChannel.getPort());
+		socket.send(packet);
+	}	
+
+	public void sendToMdr(Message m) throws IOException {
+
+		byte[] buf = m.toBytes();
+
+		DatagramPacket packet = new DatagramPacket(buf, buf.length, this.mdrChannel.getAddress(),
+				this.mdrChannel.getPort());
 		socket.send(packet);
 
 	}

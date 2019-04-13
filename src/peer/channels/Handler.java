@@ -62,7 +62,7 @@ public class Handler implements Runnable {
     }
 
     public void handleGETCHUNK(){
-
+        
     }
 
     public void handleCHUNK(){
