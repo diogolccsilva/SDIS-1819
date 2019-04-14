@@ -42,7 +42,7 @@ public class ChunkManagement {
 		return storesCounter.get(fileId).get(chunkNo);
 	}
 
-	public void registerStored(String fileId, int chunkNo) {
+	public int registerStored(String fileId, int chunkNo) {
 		if (!storesCounter.containsKey(fileId)) {
 			storesCounter.put(fileId, new HashMap<Integer, Integer>());
 		}
@@ -51,6 +51,20 @@ public class ChunkManagement {
 		} else {
 			int nStores = storesCounter.get(fileId).get(chunkNo);
 			storesCounter.get(fileId).put(chunkNo, nStores + 1);
+		}
+		return storesCounter.get(fileId).get(chunkNo);
+	}
+
+	public int registerRemoved(String fileId, int chunkNo) {
+		if (!storesCounter.containsKey(fileId)) {
+			return 0;
+		}
+		if (!storesCounter.get(fileId).containsKey(chunkNo)) {
+			return 0;
+		} else {
+			int nStores = storesCounter.get(fileId).get(chunkNo);
+			storesCounter.get(fileId).put(chunkNo, nStores - 1);
+			return storesCounter.get(fileId).get(chunkNo);
 		}
 	}
 

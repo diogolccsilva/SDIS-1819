@@ -102,6 +102,9 @@ public class MessageHeader {
         case "DELETE":
             return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + this.fileId
                     + CRLF;
+        case "REMOVED":
+            return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + this.fileId
+                    + " " + Integer.toString(this.chunkNo) + CRLF;
         default:
             return "";
 

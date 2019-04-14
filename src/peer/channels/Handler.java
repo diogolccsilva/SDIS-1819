@@ -7,6 +7,7 @@ import chunk.Chunk;
 import disk.ChunkManagement;
 import peer.Peer;
 import peer.protocols.backup.Store;
+import peer.protocols.reclaim.Reclaim;
 import peer.protocols.restore.GetChunk;
 import message.*;
 
@@ -50,9 +51,26 @@ public class Handler implements Runnable {
             case "DELETE":
                 handleDELETE();
                 break;
+            case "REMOVED":
+                handleREMOVED();
+                break;
             default:
                 break;
             }
+    }
+
+    private void handleREMOVED() {
+        String fileId = this.msgHeader.getFileId();
+        int chunkNo = this.msgHeader.getChunkNo();
+        ChunkManagement.getInstance().registerRemoved(fileId, chunkNo);
+
+        Thread t = new Thread(new Reclaim(peer, fileId, chunkNo));
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void handlePUTCHUNK() {
