@@ -25,22 +25,8 @@ public class Disk {
 	private File directory;
 	private File backupDirectory, restoredDirectory;
 
-	public static void main(String[] args) {
-		Disk disk = new Disk("peer1");
-		disk.createFileFolder("1");
-		String data = "DSFAg";
-		disk.storeChunk(new Chunk("2", 1, 1, data.getBytes()));
-		disk.storeChunk(new Chunk("2", 2, 1, data.getBytes()));
-		System.out.println(disk.getFileChunks("2").length);
-		Chunk chunk1 = disk.getChunk("2", 1);
-		Chunk chunk3 = disk.getChunk("2", 3);
-		disk.deleteChunk("2", 2);
-		Chunk[] chunks = Chunk.splitFile(args[0], 1);
-		disk.restoreFile(chunks);
-	}
-
-	public void restoreFile(Chunk[] chunks) {
-		Chunk.restoreFile(chunks, getRestoredDirectoryPath() + fileSeparator + "file1.pdf");
+	public void restoreFile(Chunk[] chunks, String fileName) {
+		Chunk.restoreFile(chunks, getRestoredDirectoryPath() + fileSeparator + fileName);
 	}
 
 	public Disk(String diskName) {

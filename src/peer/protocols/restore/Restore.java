@@ -61,7 +61,7 @@ public class Restore implements Runnable {
 				e.printStackTrace();
 			}
 		}
-		peer.getDisk().restoreFile(chunks);
+		peer.getDisk().restoreFile(chunks,originalFile.getName());
 	}
 
 	@Override
