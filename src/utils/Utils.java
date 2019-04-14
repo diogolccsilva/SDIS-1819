@@ -32,8 +32,8 @@ public class Utils {
         return s.matches("[0-9]*\\.?[0-9]+");
     }
 
-    public static void deleteDirectoryRecursively(File file) throws IOException {
-        if (file.isDirectory()) {
+    public static boolean deleteDirectoryRecursively(File file) /*throws IOException */{
+        /*if (file.isDirectory()) {
             File[] entries = file.listFiles();
             if (entries != null) {
                 for (File entry : entries) {
@@ -41,8 +41,20 @@ public class Utils {
                 }
             }
         }
+        return file.delete();
         if (!file.delete()) {
             throw new IOException("Failed to delete " + file);
+        }*/
+        File[] files = file.listFiles();
+        if(files!=null) {
+            for(File f: files) {
+                if(f.isDirectory()) {
+                    deleteDirectoryRecursively(f);
+                } else {
+                    f.delete();
+                }
+            }
         }
+        return file.delete();
     }
 }

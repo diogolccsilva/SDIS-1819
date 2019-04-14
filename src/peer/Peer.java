@@ -93,6 +93,10 @@ public class Peer /*extends UnicastRemoteObject*/ implements PeerInterface {
 			return;
 		}
 		String filePath = Disk.resourcesPath + "loremipsum.pdf";
+
+		if (id == 1){
+			peer.delete(filePath);
+		}
 		
 	}
 

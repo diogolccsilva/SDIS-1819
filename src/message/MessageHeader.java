@@ -50,10 +50,10 @@ public class MessageHeader {
 
     public MessageHeader(String messageType, String version, int senderId, String fileId)
             throws InvalidHeaderParameters {
+        this.messageType = messageType;
         if (!this.messageType.equals("DELETE")) {
             throw new InvalidHeaderParameters();
         }
-        this.messageType = messageType;
         this.version = version;
         this.senderId = senderId;
         this.fileId = fileId;
@@ -98,6 +98,8 @@ public class MessageHeader {
         case "CHUNK":
             return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + this.fileId
                     + " " + Integer.toString(this.chunkNo) + "\r\n\r\n";
+        case "DELETE":
+            return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + this.fileId + "\r\n\r\n";
         default:
             return "";
         }

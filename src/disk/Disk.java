@@ -211,15 +211,19 @@ public class Disk {
 		return chunk;
 	}
 
-	public boolean deleteFileDirectory(String fileId) {
-		File fileDir = getFileChunkDirectory(fileId);
-		try {
+	public void deleteFileDirectory(String fileId) {
+		//File fileDir = getFileChunkDirectory(fileId);
+		/*try {
 			Utils.deleteDirectoryRecursively(fileDir);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
 		}
 		return true;
+		*/
+		File fileDir = new File(backupDirectory + "\\" + fileId);
+		System.out.println("FileDir: " + fileDir);
+		Utils.deleteDirectoryRecursively(fileDir);
 	}
 
 	public boolean deleteChunk(String fileId, int chunkId) {

@@ -1,7 +1,9 @@
 package peer.protocols.delete;
 
+import java.io.File;
 import java.io.IOException;
 
+import chunk.Chunk;
 import message.Message;
 import peer.Peer;
 
@@ -15,7 +17,8 @@ public class Delete implements Runnable {
 
 	public Delete(Peer peer, String fileId) {
 		this.peer = peer;
-		this.fileId = fileId;
+		File originalFile = new File(fileId);
+		this.fileId = Chunk.generateFileId(originalFile);
 	}
 
 	public void sendDelete() {
