@@ -95,10 +95,8 @@ public class Handler implements Runnable {
     }
 
     public void handleDELETE() {
-
-    }   
-
-    public void sendSTORED(Chunk chunk) {
-
+        String fileID = msgHeader.getFileId();
+        this.peer.getDisk().deleteFileDirectory(fileID);
+        ChunkManagement.getInstance().deleteStores(fileID);
     }
 }

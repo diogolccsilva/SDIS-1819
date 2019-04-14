@@ -92,9 +92,8 @@ public class Peer /*extends UnicastRemoteObject*/ implements PeerInterface {
 			e.printStackTrace();
 			return;
 		}
-		String filePath = Disk.resourcesPath + "pepe.jpg";
-		peer.restore(filePath);
-		//peer.backup(filePath, 1);
+		String filePath = Disk.resourcesPath + "loremipsum.pdf";
+		
 	}
 
 	public void startRMI() {
@@ -102,7 +101,7 @@ public class Peer /*extends UnicastRemoteObject*/ implements PeerInterface {
 			try {
 				this.rmiReg = LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
 			} catch(Exception e) {
-				this.rmiReg = LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
+				this.rmiReg = LocateRegistry.getRegistry(Registry.REGISTRY_PORT);
 			}
 			PeerInterface stub = (PeerInterface) UnicastRemoteObject.exportObject(this, 0);
 			rmiReg.rebind(this.accessPoint, stub);
