@@ -96,7 +96,7 @@ public class Handler implements Runnable {
 
     public void handleDELETE() {
 
-    }
+    }   
 
     public void sendSTORED(Chunk chunk) {
 

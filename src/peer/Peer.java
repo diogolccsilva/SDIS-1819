@@ -17,9 +17,9 @@ import peer.protocols.backup.Backup;
 import peer.protocols.delete.Delete;
 import peer.protocols.restore.Restore;
 
-public class Peer extends UnicastRemoteObject implements PeerInterface {
+public class Peer /*extends UnicastRemoteObject*/ implements PeerInterface {
 
-	private static final long serialVersionUID = 4988282307993613946L;
+	//private static final long serialVersionUID = 4988282307993613946L;
 
 	private int peerId;
 	private Disk disk;
@@ -44,7 +44,7 @@ public class Peer extends UnicastRemoteObject implements PeerInterface {
 
 	public Peer(String pVersion, int sid, String accessPoint, String mcAddress, int mcPort, String mdbAddress,
 			int mdbPort, String mdrAddress, int mdrPort) throws RemoteException {
-		super();
+		
 		this.peerId = sid;
 
 		try {
@@ -69,7 +69,7 @@ public class Peer extends UnicastRemoteObject implements PeerInterface {
 			e.printStackTrace();
 		}
 
-		// this.startRMI();
+		this.startRMI();
 
 		try {
 			this.startChannels(mcAddress, mcPort, mdbAddress, mdbPort, mdrAddress, mdrPort);
@@ -77,7 +77,7 @@ public class Peer extends UnicastRemoteObject implements PeerInterface {
 			e.printStackTrace();
 		}
 
-		System.out.println("Peer " + this.peerId + "running...");
+		System.out.println("Peer " + this.peerId + " running...");
 	}
 
 	public static void main(String[] args) {
@@ -99,8 +99,13 @@ public class Peer extends UnicastRemoteObject implements PeerInterface {
 
 	public void startRMI() {
 		try {
-			this.rmiReg = LocateRegistry.getRegistry();
-			rmiReg.rebind(this.accessPoint, this);
+			try {
+				this.rmiReg = LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
+			} catch(Exception e) {
+				this.rmiReg = LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
+			}
+			PeerInterface stub = (PeerInterface) UnicastRemoteObject.exportObject(this, 0);
+			rmiReg.rebind(this.accessPoint, stub);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
