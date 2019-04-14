@@ -9,7 +9,7 @@ public class MessageHeader {
 
     public MessageHeader(String rawHeader) {
         System.out.println("Messageheader: " + rawHeader);
-        String[] sArray = rawHeader.split(" ");
+        String[] sArray = rawHeader.trim().split(" ");
         this.messageType = sArray[0];
         this.version = sArray[1];
         this.senderId = Integer.parseInt(sArray[2]);
@@ -99,9 +99,11 @@ public class MessageHeader {
             return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + this.fileId
                     + " " + Integer.toString(this.chunkNo) + "\r\n\r\n";
         case "DELETE":
-            return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + this.fileId + "\r\n\r\n";
+            return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + this.fileId
+                    + "\r\n\r\n";
         default:
             return "";
+
         }
         // return this.messageType + " " + this.version + " " +
         // Integer.toString(this.senderId) + " " + this.fileId + " " +

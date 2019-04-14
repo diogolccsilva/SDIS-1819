@@ -40,5 +40,4 @@ public class Delete implements Runnable {
 		delete();
 	}
 
-	
 }
