@@ -1,7 +1,9 @@
 package peer.protocols.reclaim;
 
+import chunk.Chunk;
 import disk.ChunkManagement;
 import peer.Peer;
+import peer.protocols.backup.BackupChunk;
 
 /**
  * Reclaim
@@ -19,7 +21,20 @@ public class Reclaim implements Runnable {
     }
 
     public void reclaim() {
-        
+        Chunk chunk = peer.getDisk().getChunk(fileId, chunkNo);
+        if (chunk != null) {
+            try {
+                Thread.sleep((long) (Math.random() * 400 + 1));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (ChunkManagement.getInstance().getStores(fileId, chunkNo) < chunk.getRepDegree()) {
+                BackupChunk backupChunk = new BackupChunk(peer, chunk);
+                Thread bThread = new Thread(backupChunk);
+                bThread.start();
+            }
+        }
+
     }
 
     @Override
@@ -27,5 +42,4 @@ public class Reclaim implements Runnable {
         reclaim();
     }
 
-    
 }
