@@ -3,6 +3,7 @@ package peer.protocols.restore;
 import java.io.IOException;
 
 import chunk.Chunk;
+import disk.ChunkManagement;
 import message.Message;
 import peer.Peer;
 
@@ -33,6 +34,15 @@ public class GetChunk implements Runnable{
     public boolean getChunk() {
         Chunk chunk = peer.getDisk().getChunk(fileId, chunkNo);
         if (chunk!= null){
+            try {
+                Thread.sleep((long) (Math.random() * 400 + 1));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (ChunkManagement.getInstance().getRestoreChunks().contains(chunk)){
+                ChunkManagement.getInstance().getRestoreChunks().remove(chunk);
+                return false;
+            }
             sendChunk(chunk);
             return true;
         }

@@ -10,7 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import javax.xml.bind.DatatypeConverter;
 
 public class Chunk {
-    public static final int CHUNK_MAX_SIZE = 64000;
+    public static final int CHUNK_MAX_SIZE = 500;
 
     private int chunkNo;
     private String fileID;
@@ -136,4 +136,12 @@ public class Chunk {
         }
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        final Chunk c = (Chunk) obj;
+        return (c.chunkNo == chunkNo && c.fileID.equals(fileID) && c.repDegree == repDegree);
+    }
 }
