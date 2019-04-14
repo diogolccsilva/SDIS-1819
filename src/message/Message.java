@@ -16,9 +16,12 @@ public class Message {
     public Message(byte[] data) {
         String rawMessage = new String(data);
         int index = rawMessage.indexOf("\r\n\r\n") + 4;
-        String rawHeader = rawMessage.substring(0, index).trim();
-        header = new MessageHeader(rawHeader);
-        body = rawMessage.substring(index).getBytes();
+        byte[] rawHeader = new byte[index+1];
+        System.arraycopy(data, 0, rawHeader, 0, index - 4);
+        header = new MessageHeader(new String(rawHeader));
+        int bodyLength = data.length - index;
+        body = new byte[bodyLength];
+        System.arraycopy(data, index, body, 0, bodyLength);
     }
 
     public Message(MessageHeader header, byte[] body) {

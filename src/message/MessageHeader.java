@@ -16,11 +16,14 @@ public class MessageHeader {
         this.fileId = sArray[3];
         System.out.println("fileid: " + fileId);
         if (this.messageType.equals("PUTCHUNK") || this.messageType.equals("STORED")
-                || this.messageType.equals("GETCHUNK") || this.messageType.equals("REMOVED") || this.messageType.equals("CHUNK")) {
-            this.chunkNo = Integer.parseInt(sArray[4]);
+                || this.messageType.equals("GETCHUNK") || this.messageType.equals("REMOVED")
+                || this.messageType.equals("CHUNK")) {
+            String cn = sArray[4].replaceAll("[^\\d]", "");
+            this.chunkNo = Integer.parseInt(cn);
         }
         if (this.messageType.equals("PUTCHUNK")) {
-            this.replicaDeg = Integer.parseInt(sArray[5]);
+            String rep = sArray[5].replaceAll("[^\\d]", "");
+            this.replicaDeg = Integer.parseInt(rep);
         }
     }
 
