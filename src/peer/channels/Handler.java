@@ -22,10 +22,20 @@ public class Handler implements Runnable {
         this.packet = packet;
     }
 
+    public void parsePacket() {
+        int packetLength = packet.getLength();
+        byte[] rawData = new byte[packetLength];
+        byte[] packetData = this.packet.getData();
+        System.out.println("array length: " + packetData.length + " packet length: " + packetLength);
+        System.arraycopy(packet.getData(), packet.getOffset(), rawData, 0, packetLength);
+        this.msg = new Message(rawData);
+        this.msgHeader = msg.getHeader();
+    }
+
     @Override
     public void run() {
-        this.msg = new Message(this.packet.getData());
-        this.msgHeader = msg.getHeader();
+
+        parsePacket();
 
         if (this.peer.getPeerId() != this.msgHeader.getSenderId())
             switch (this.msgHeader.getMessageType()) {
