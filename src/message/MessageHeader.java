@@ -2,6 +2,7 @@ package message;
 
 public class MessageHeader {
 
+    public static final String CRLF = "\r\n\r\n";
     public static final int MESSAGE_HEADER_MAX_SIZE = 1000;
 
     private String messageType, version, fileId;
@@ -9,7 +10,7 @@ public class MessageHeader {
 
     public MessageHeader(String rawHeader) {
         System.out.println("Messageheader: " + rawHeader);
-        String[] sArray = rawHeader.split(" ");
+        String[] sArray = rawHeader.trim().split(" ");
         this.messageType = sArray[0];
         this.version = sArray[1];
         this.senderId = Integer.parseInt(sArray[2]);
@@ -88,24 +89,22 @@ public class MessageHeader {
         switch (messageType) {
         case "GETCHUNK":
             return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + this.fileId
-                    + " " + Integer.toString(this.chunkNo) + "\r\n\r\n";
+                    + " " + Integer.toString(this.chunkNo) + CRLF;
         case "PUTCHUNK":
             return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + this.fileId
-                    + " " + Integer.toString(this.chunkNo) + " " + Integer.toString(this.replicaDeg) + "\r\n\r\n";
+                    + " " + Integer.toString(this.chunkNo) + " " + Integer.toString(this.replicaDeg) + CRLF;
         case "STORED":
             return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + this.fileId
-                    + " " + Integer.toString(this.chunkNo) + "\r\n\r\n";
+                    + " " + Integer.toString(this.chunkNo) + CRLF;
         case "CHUNK":
             return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + this.fileId
-                    + " " + Integer.toString(this.chunkNo) + "\r\n\r\n";
+                    + " " + Integer.toString(this.chunkNo) + CRLF;
         case "DELETE":
-            return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + this.fileId + "\r\n\r\n";
+            return this.messageType + " " + this.version + " " + Integer.toString(this.senderId) + " " + this.fileId
+                    + CRLF;
         default:
             return "";
+
         }
-        // return this.messageType + " " + this.version + " " +
-        // Integer.toString(this.senderId) + " " + this.fileId + " " +
-        // Integer.toString(this.chunkNo) + " " +
-        // Integer.toString(this.replicaDeg)+"\r\n\r\n";
     }
 }

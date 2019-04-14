@@ -16,8 +16,7 @@ public class Disk {
 	public static final String fileSeparator = System.getProperty("file.separator");
 	public static final String filesPath = "." + fileSeparator + "files" + fileSeparator;
 	public static final String resourcesPath = filesPath + "resources" + fileSeparator;
-	public static final String defaultDiskLocation = filesPath + "peers"
-			+ fileSeparator;
+	public static final String defaultDiskLocation = filesPath + "peers" + fileSeparator;
 	public static final long defaultDiskSize = 10000000; /* Disk size in KBytes */
 
 	private long size; /* Disk size in bytes */
@@ -222,7 +221,7 @@ public class Disk {
 		return true;
 		*/
 		File fileDir = new File(backupDirectory + "\\" + fileId);
-		System.out.println("FileDir: " + fileDir);
+		System.out.println("FileDir: \"" + fileDir + "\"");
 		Utils.deleteDirectoryRecursively(fileDir);
 	}
 

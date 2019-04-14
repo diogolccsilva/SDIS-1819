@@ -15,7 +15,7 @@ public class Message {
 
     public Message(byte[] data) {
         String rawMessage = new String(data);
-        int index = rawMessage.indexOf("\r\n\r\n") + 4;
+        int index = rawMessage.indexOf(MessageHeader.CRLF) + 4;
         byte[] rawHeader = new byte[index+1];
         System.arraycopy(data, 0, rawHeader, 0, index - 4);
         header = new MessageHeader(new String(rawHeader));

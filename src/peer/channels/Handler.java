@@ -26,8 +26,7 @@ public class Handler implements Runnable {
         int packetLength = packet.getLength();
         byte[] rawData = new byte[packetLength];
         byte[] packetData = this.packet.getData();
-        System.out.println("array length: " + packetData.length + " packet length: " + packetLength);
-        System.arraycopy(packet.getData(), packet.getOffset(), rawData, 0, packetLength);
+        System.arraycopy(packetData, packet.getOffset(), rawData, 0, packetLength);
         this.msg = new Message(rawData);
         this.msgHeader = msg.getHeader();
     }
