@@ -220,7 +220,7 @@ public class Disk {
 		}
 		return true;
 		*/
-		File fileDir = new File(backupDirectory + "\\" + fileId);
+		File fileDir = new File(backupDirectory + fileSeparator + fileId);
 		System.out.println("FileDir: \"" + fileDir + "\"");
 		Utils.deleteDirectoryRecursively(fileDir);
 	}

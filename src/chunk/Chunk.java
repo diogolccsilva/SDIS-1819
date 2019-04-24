@@ -7,7 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import javax.xml.bind.DatatypeConverter;
+import java.util.Base64;
 
 public class Chunk {
     public static final int CHUNK_MAX_SIZE = 64000;
@@ -106,7 +106,7 @@ public class Chunk {
         byte[] encodedhash;
         try {
             encodedhash = digest.digest(toEncode.getBytes("UTF-8"));
-            return DatatypeConverter.printBase64Binary(encodedhash);
+            return Base64.getEncoder().withoutPadding().encodeToString(encodedhash);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -126,7 +126,7 @@ public class Chunk {
     }
 
     public static void restoreFile(Chunk[] chunks, String filePath) {
-        sortChunkArray(chunks);
+        //sortChunkArray(chunks);
         try (FileOutputStream fos = new FileOutputStream(filePath)) {
             for (int i = 0; i < chunks.length; i++) {
                 fos.write(chunks[i].getData());
