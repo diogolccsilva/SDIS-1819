@@ -44,18 +44,17 @@ public class Restore implements Runnable {
 		int chunksNo = Chunk.getNumberOfFileChunks(originalFile);
 		Chunk[] chunks = new Chunk[chunksNo];
 		String fileId = Chunk.generateFileId(originalFile);
-		for (int i = 0; i < chunksNo; i++) {
+		int i=0;
+		while (i < chunksNo) {
 			sendGetChunk(i + 1);
 			BlockingQueue<Chunk> queue = ChunkManagement.getInstance().getRestoreChunks();
 			try {
 				System.out.println("Waiting for chunk " + (i+1));
 				Chunk chunk = queue.take();
-				if (chunk.getFileID().equals(fileId)){
+				if (chunk.getFileID().equals(fileId) && chunk.getChunkNo() == i+1){
 					chunks[i] = chunk;
+					i++;
 					System.out.println("received chunk " + chunk.getChunkNo());
-				}
-				else {
-					queue.put(chunk);
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
