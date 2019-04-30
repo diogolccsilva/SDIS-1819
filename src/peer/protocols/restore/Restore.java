@@ -50,7 +50,7 @@ public class Restore implements Runnable {
 			try {
 				System.out.println("Waiting for chunk " + (i+1));
 				Chunk chunk = queue.take();
-				if (chunk.getFileID().equals(fileId)){
+				if (chunk.getFileID().equals(fileId) && chunk.getChunkNo() == i+1){
 					chunks[i] = chunk;
 					System.out.println("received chunk " + chunk.getChunkNo());
 				}
