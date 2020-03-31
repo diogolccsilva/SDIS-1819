@@ -17,9 +17,9 @@ import peer.protocols.backup.Backup;
 import peer.protocols.delete.Delete;
 import peer.protocols.restore.Restore;
 
-public class Peer /*extends UnicastRemoteObject*/ implements PeerInterface {
+public class Peer implements PeerInterface {
 
-	//private static final long serialVersionUID = 4988282307993613946L;
+	// private static final long serialVersionUID = 4988282307993613946L;
 
 	private int peerId;
 	private Disk disk;
@@ -42,9 +42,22 @@ public class Peer /*extends UnicastRemoteObject*/ implements PeerInterface {
 	private Listener mdbChannel;
 	private Listener mdrChannel;
 
+	public static void main(String[] args) {
+		int id = Integer.parseInt(args[1]);
+		int mcPort = Integer.parseInt(args[4]);
+		int mdbPort = Integer.parseInt(args[6]);
+		int mdrPort = Integer.parseInt(args[8]);
+		try {
+			new Peer(args[0], id, args[2], args[3], mcPort, args[5], mdbPort, args[7], mdrPort);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			return;
+		}
+	}
+
 	public Peer(String pVersion, int sid, String accessPoint, String mcAddress, int mcPort, String mdbAddress,
 			int mdbPort, String mdrAddress, int mdrPort) throws RemoteException {
-		
+
 		this.peerId = sid;
 
 		try {
@@ -80,27 +93,11 @@ public class Peer /*extends UnicastRemoteObject*/ implements PeerInterface {
 		System.out.println("Peer " + this.peerId + " running...");
 	}
 
-	public static void main(String[] args) {
-		int id = Integer.parseInt(args[1]);
-		int mcPort = Integer.parseInt(args[4]);
-		int mdbPort = Integer.parseInt(args[6]);
-		int mdrPort = Integer.parseInt(args[8]);
-		Peer peer;
-		try {
-			peer = new Peer(args[0], id, args[2], args[3], mcPort, args[5], mdbPort, args[7], mdrPort);
-		} catch (RemoteException e) {
-			e.printStackTrace();
-			return;
-		}
-		//String filePath = Disk.resourcesPath + "loremipsum.pdf";
-		
-	}
-
 	public void startRMI() {
 		try {
 			try {
 				this.rmiReg = LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
-			} catch(Exception e) {
+			} catch (Exception e) {
 				this.rmiReg = LocateRegistry.getRegistry(Registry.REGISTRY_PORT);
 			}
 			PeerInterface stub = (PeerInterface) UnicastRemoteObject.exportObject(this, 0);
@@ -180,7 +177,7 @@ public class Peer /*extends UnicastRemoteObject*/ implements PeerInterface {
 		DatagramPacket packet = new DatagramPacket(buf, buf.length, this.mdbChannel.getAddress(),
 				this.mdbChannel.getPort());
 		socket.send(packet);
-	}	
+	}
 
 	public void sendToMdr(Message m) throws IOException {
 
@@ -295,6 +292,10 @@ public class Peer /*extends UnicastRemoteObject*/ implements PeerInterface {
 	 */
 	public int getMdrPort() {
 		return mdrPort;
+	}
+
+	public void deleteFile(String fileID) {
+		disk.deleteFileDirectory(fileID);
 	}
 
 }

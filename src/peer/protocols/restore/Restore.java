@@ -8,8 +8,6 @@ import chunk.Chunk;
 import disk.ChunkManagement;
 import message.Message;
 import peer.Peer;
-import peer.channels.Sender;
-import peer.channels.SenderUDP;
 
 /**
  * Restore
@@ -47,7 +45,7 @@ public class Restore implements Runnable {
 		int i=0;
 		while (i < chunksNo) {
 			sendGetChunk(i + 1);
-			BlockingQueue<Chunk> queue = ChunkManagement.getInstance().getRestoreChunks();
+			BlockingQueue<Chunk> queue = ChunkManagement.getInstance().getRestoreChunks(fileId);
 			try {
 				System.out.println("Waiting for chunk " + (i+1));
 				Chunk chunk = queue.take();

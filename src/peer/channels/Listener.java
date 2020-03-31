@@ -1,7 +1,6 @@
 package peer.channels;
 
 import peer.Peer;
-import peer.channels.Handler;
 
 import java.io.IOException;
 import java.net.InetAddress;

@@ -1,6 +1,5 @@
 package peer.channels;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 
 import chunk.Chunk;
@@ -113,7 +112,7 @@ public class Handler implements Runnable {
 
     public void handleDELETE() {
         String fileID = msgHeader.getFileId();
-        this.peer.getDisk().deleteFileDirectory(fileID);
+        this.peer.deleteFile(fileID);
         ChunkManagement.getInstance().deleteStores(fileID);
     }
 }

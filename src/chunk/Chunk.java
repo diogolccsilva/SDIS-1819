@@ -84,7 +84,7 @@ public class Chunk {
                 }
                 byte[] newData = new byte[nBytesToRead];
                 data.readFully(newData);
-                Chunk newChunk = new Chunk(generateFileId(file), i + 1, repDegree, newData);
+                Chunk newChunk = new Chunk(fileId, i + 1, repDegree, newData);
                 chunks[i] = newChunk;
                 nReadBytes += CHUNK_MAX_SIZE;
             }
