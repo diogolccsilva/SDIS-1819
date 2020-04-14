@@ -1,9 +1,11 @@
 package peer.protocols.reclaim;
 
-import chunk.Chunk;
-import disk.ChunkManagement;
+import java.io.IOException;
+
+import chunk.ChunkInfo;
+import disk.Disk;
+import message.Message;
 import peer.Peer;
-import peer.protocols.backup.BackupChunk;
 
 /**
  * Reclaim
@@ -11,30 +13,31 @@ import peer.protocols.backup.BackupChunk;
 public class Reclaim implements Runnable {
 
     private Peer peer;
-    private String fileId;
-    private int chunkNo;
+    private long spaceToReclaim;
 
-    public Reclaim(Peer peer, String fileId, int chunkNo) {
+    public Reclaim(Peer peer, long space) {
         this.peer = peer;
-        this.fileId = fileId;
-        this.chunkNo = chunkNo;
+        this.spaceToReclaim = space;
     }
 
     public void reclaim() {
-        Chunk chunk = peer.getDisk().getChunk(fileId, chunkNo);
-        if (chunk != null) {
-            try {
-                Thread.sleep((long) (Math.random() * 400 + 1));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        Disk disk = peer.getDisk();
+        long spaceReclaimed = 0;
+        for (ChunkInfo chunkI : disk.getChunksStored()) {
+            if (disk.deleteChunk(chunkI)) {
+                spaceReclaimed += chunkI.getSize();
+                Message m = Message.parseRemovedMessage(chunkI.getFileID(), chunkI.getChunkNo(), this.peer);
+                try {
+                    peer.sendToMc(m);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
-            if (ChunkManagement.getInstance().getStores(fileId, chunkNo) < chunk.getRepDegree()) {
-                BackupChunk backupChunk = new BackupChunk(peer, chunk);
-                Thread bThread = new Thread(backupChunk);
-                bThread.start();
+            if (spaceReclaimed >= spaceToReclaim) {
+                break;
             }
         }
-
     }
 
     @Override

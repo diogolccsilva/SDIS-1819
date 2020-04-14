@@ -15,6 +15,7 @@ import message.Message;
 import peer.channels.Listener;
 import peer.protocols.backup.Backup;
 import peer.protocols.delete.Delete;
+import peer.protocols.reclaim.Reclaim;
 import peer.protocols.restore.Restore;
 
 public class Peer implements PeerInterface {
@@ -152,8 +153,14 @@ public class Peer implements PeerInterface {
 		}
 	}
 
-	public void reclaim(float space) {
-
+	public void reclaim(long space) {
+		Thread t = new Thread(new Reclaim(this, space));
+		t.start();
+		try {
+			t.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public String state() {

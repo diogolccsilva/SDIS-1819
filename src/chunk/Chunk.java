@@ -12,6 +12,8 @@ import java.util.Base64;
 public class Chunk {
     public static final int CHUNK_MAX_SIZE = 64000;
 
+    private ChunkInfo chunkInfo;
+
     private int chunkNo;
     private String fileID;
 
@@ -24,6 +26,8 @@ public class Chunk {
         this.fileID = fileID;
         this.data = data;
         this.repDegree = repDegree;
+
+        this.chunkInfo = new ChunkInfo(chunkNo, fileID, repDegree, data.length);
     }
 
     /**
@@ -52,6 +56,13 @@ public class Chunk {
      */
     public byte[] getData() {
         return data;
+    }
+
+    /**
+     * @return the chunkInfo
+     */
+    public ChunkInfo getChunkInfo() {
+        return chunkInfo;
     }
 
     public static Chunk[] splitFile(String path, int repDegree) {
@@ -126,7 +137,7 @@ public class Chunk {
     }
 
     public static void restoreFile(Chunk[] chunks, String filePath) {
-        //sortChunkArray(chunks);
+        // sortChunkArray(chunks);
         try (FileOutputStream fos = new FileOutputStream(filePath)) {
             for (int i = 0; i < chunks.length; i++) {
                 fos.write(chunks[i].getData());

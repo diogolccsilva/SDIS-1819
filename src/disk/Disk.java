@@ -5,6 +5,8 @@ import utils.Utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.LinkedList;
+import java.util.List;
 import java.io.FileInputStream;
 
 /**
@@ -22,6 +24,7 @@ public class Disk {
 	private String diskLocation;
 	private File directory;
 	private File backupDirectory, restoredDirectory;
+	private List<ChunkInfo> chunksStored;
 
 	public void restoreFile(Chunk[] chunks, String fileName) {
 		Chunk.restoreFile(chunks, getRestoredDirectoryPath() + fileSeparator + fileName);
@@ -35,6 +38,7 @@ public class Disk {
 		this.diskLocation = defaultDiskLocation + diskName;
 		this.size = (long) (size * 1000);
 		createDiskDirectory();
+		this.chunksStored = new LinkedList<ChunkInfo>();
 	}
 
 	/**
@@ -63,6 +67,13 @@ public class Disk {
 	 */
 	public File getRestoredDirectory() {
 		return restoredDirectory;
+	}
+
+	/**
+	 * @return the chunksStored
+	 */
+	public List<ChunkInfo> getChunksStored() {
+		return chunksStored;
 	}
 
 	public String getRestoredDirectoryPath() {
@@ -144,6 +155,8 @@ public class Disk {
 			return false;
 		}
 
+		this.chunksStored.add(chunk.getChunkInfo());
+
 		return true;
 	}
 
@@ -210,15 +223,11 @@ public class Disk {
 	}
 
 	public void deleteFileDirectory(String fileId) {
-		//File fileDir = getFileChunkDirectory(fileId);
-		/*try {
-			Utils.deleteDirectoryRecursively(fileDir);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
-		*/
+		// File fileDir = getFileChunkDirectory(fileId);
+		/*
+		 * try { Utils.deleteDirectoryRecursively(fileDir); } catch (IOException e) {
+		 * e.printStackTrace(); return false; } return true;
+		 */
 		File fileDir = new File(backupDirectory + fileSeparator + fileId);
 		System.out.println("FileDir: \"" + fileDir + "\"");
 		Utils.deleteDirectoryRecursively(fileDir);
@@ -230,7 +239,17 @@ public class Disk {
 			System.out.println("Failed to delete " + chunkFile);
 			return false;
 		}
+		for (ChunkInfo chunkInfo : chunksStored) {
+			if (chunkInfo.getFileID() == fileId && chunkInfo.getChunkNo()==chunkId) {
+				chunksStored.remove(chunkInfo);
+				break;
+			}
+		}
 		return true;
+	}
+
+	public boolean deleteChunk(ChunkInfo chunkI) {
+		return this.deleteChunk(chunkI.getFileID(), chunkI.getChunkNo());
 	}
 
 }

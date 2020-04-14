@@ -105,6 +105,17 @@ public class Message {
             e.printStackTrace();
         }
         return null;
-	}
+    }
+    
+    public static Message parseRemovedMessage(String fileId, int chunkNo, Peer peer) {
+        try {
+            MessageHeader header = new MessageHeader("REMOVED", peer.getpVersion(), peer.getPeerId(), fileId, chunkNo);
+            Message message = new Message(header, null);
+            return message;
+        } catch (InvalidHeaderParameters e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }

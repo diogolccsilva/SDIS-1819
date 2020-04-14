@@ -7,6 +7,7 @@ import disk.ChunkManagement;
 import peer.Peer;
 import peer.protocols.backup.Store;
 import peer.protocols.reclaim.Reclaim;
+import peer.protocols.reclaim.Removed;
 import peer.protocols.restore.GetChunk;
 import message.*;
 
@@ -63,7 +64,7 @@ public class Handler implements Runnable {
         int chunkNo = this.msgHeader.getChunkNo();
         ChunkManagement.getInstance().registerRemoved(fileId, chunkNo);
 
-        Thread t = new Thread(new Reclaim(peer, fileId, chunkNo));
+        Thread t = new Thread(new Removed(peer, fileId, chunkNo));
         t.start();
         try {
             t.join();
